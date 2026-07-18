@@ -1,4 +1,6 @@
-name: discoverzo
+# Optional environment for the official COCO adapter. Availability of the
+# compiled coco-experiment package depends on platform/Python support.
+name: discoverzo-coco
 channels:
   - conda-forge
 dependencies:
@@ -12,4 +14,4 @@ dependencies:
   - pytest>=8
   - pip
   - pip:
-      - -e .
+      - -e .[coco]

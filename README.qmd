@@ -1,6 +1,8 @@
 ---
 format: gfm-commonmark
 default-image-extension: ""
+execute:
+  eval: false
 ---
 
 ### Citation
@@ -9,16 +11,56 @@ default-image-extension: ""
 
 ### Badges
 
-[![build and publish](https://github.com/{{< meta github-user >}}/{{< meta repo >}}/actions/workflows/build.yml/badge.svg)](https://github.com/{{< meta github-user >}}/{{< meta repo >}}/actions/workflows/build.yml)
-[![reviews](https://img.shields.io/badge/review-report-blue)](https://github.com/{{< meta github-user >}}/{{< meta repo >}}/issues?q=is%3Aopen+is%3Aissue+label%3Areview)
-[![SWH](https://archive.softwareheritage.org/badge/origin/https://github.com/{{< meta github-user >}}/{{< meta repo >}})](https://archive.softwareheritage.org/browse/origin/?origin_url=https://github.com/{{< meta github-user >}}/{{< meta repo >}})
-[![DOI:{{< meta citation.doi >}}](https://img.shields.io/badge/DOI-{{< shields-encode citation.doi >}}-034E79.svg)](https://doi.org/{{< meta citation.doi >}})
-[![Creative Commons License](https://i.creativecommons.org/l/by/4.0/80x15.png)](http://creativecommons.org/licenses/by/4.0/)
+[![Computo build](https://github.com/{{< meta github-user >}}/{{< meta repo >}}/actions/workflows/build.yml/badge.svg)](https://github.com/{{< meta github-user >}}/{{< meta repo >}}/actions/workflows/build.yml)
+[![Validation](https://github.com/{{< meta github-user >}}/{{< meta repo >}}/actions/workflows/validation.yml/badge.svg)](https://github.com/{{< meta github-user >}}/{{< meta repo >}}/actions/workflows/validation.yml)
+[![Reviews](https://img.shields.io/badge/review-report-blue)](https://github.com/{{< meta github-user >}}/{{< meta repo >}}/issues?q=is%3Aopen+is%3Aissue+label%3Areview)
+[![Creative Commons License](https://i.creativecommons.org/l/by/4.0/80x15.png)](https://creativecommons.org/licenses/by/4.0/)
 
-### Authors' affiliations
+### Author affiliation
 
 {{< author-list >}}
 
 ### Abstract
 
 {{< meta abstract >}}
+
+### Build the Computo article
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e ".[test]"
+quarto add computorg/computo-quarto-extension@v1.0.4 --no-prompt
+quarto render
+```
+
+The official `computo-html` and `computo-pdf` outputs are written to `_site/`.
+
+### Reproduce figures and tables
+
+```bash
+python scripts/make_manuscript_assets.py
+```
+
+The command reads committed raw and summary CSV files and regenerates every displayed figure in PDF, SVG, and 300-dpi PNG, together with all Markdown and CSV tables.
+
+### Validate code and cached results
+
+```bash
+pytest
+python scripts/validate_research_artifact.py
+python scripts/validate_manuscript.py
+```
+
+A reduced end-to-end run is available through
+
+```bash
+python -m discoverzo.cli --config configs/quick.yaml --output results/quick
+```
+
+The complete verified experiment is rerun with `python scripts/run_verified.py`; it is intentionally separated from document rendering. See `REPRODUCIBILITY.md`, `docs/experiment_protocol.md`, and `docs/VALIDATION.md` for the data schema, random-seed ledger, exact query accounting, and validation record.
+
+### Metadata to complete before submission
+
+Replace `replace-with-github-user` in `_quarto.yml` and `main.qmd`, and add the corresponding-author email in both metadata blocks. No DOI or publication URL should be inserted before assignment by the journal.

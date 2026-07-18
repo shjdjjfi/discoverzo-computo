@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this manuscript or its computational artifact, please cite it using this metadata."
+title: "Discovering active subspaces from noisy function values: Cross-fitted orthogonal sketches for dimension-adaptive zeroth-order optimization"
+type: software
+authors:
+  - family-names: Song
+    given-names: Zichen
+    orcid: "https://orcid.org/0000-0003-4155-2410"
+version: 0.2.0
+date-released: 2026-07-18
+license: MIT
+abstract: "Computo-format manuscript source and reproducible Python artifact for cross-fitted active-subspace discovery from noisy function values."
