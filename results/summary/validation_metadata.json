@@ -1,0 +1,29 @@
+{
+  "status": "passed",
+  "python": "3.13.5 (main, May  5 2026, 21:05:52) [GCC 14.2.0]",
+  "platform": "Linux-4.4.0-x86_64-with-glibc2.41",
+  "numpy": "2.3.5",
+  "pandas": "2.2.3",
+  "files": [
+    {
+      "file": "results/raw/moment_bias.csv",
+      "rows": 420,
+      "sha256": "e4c3cf35ea881e232d89a5cc7457cc4fec784d246d463a6077eaa9b05d56801e"
+    },
+    {
+      "file": "results/raw/dimension_scaling.csv",
+      "rows": 120,
+      "sha256": "1b92f910feb3085ad1d946d3ebe598c79895ed423fef4cdb25e18dfbb20e1d6f"
+    },
+    {
+      "file": "results/raw/optimization.csv",
+      "rows": 480,
+      "sha256": "34e11e9d82ff632d17c75bb2a8fcea6f4781316fa113be023c8153c0f7e1dc2f"
+    },
+    {
+      "file": "results/raw/amortization.csv",
+      "rows": 120,
+      "sha256": "a75b8e97ce341fcab0eb81d1967d9bbdf946d7d7e5d1f52eb6049a9ad967b111"
+    }
+  ]
+}
