@@ -19,7 +19,7 @@ citation:
   publisher: "French Statistical Society"
   issn: "2824-7795"
 bibliography: references.bib
-github-user: replace-with-github-user
+github-user: shjdjjfi
 repo: discoverzo-computo
 license: CC BY 4.0
 status: submitted
