@@ -1,0 +1,5 @@
+name,formula,class,global_minimizer,source_family
+sphere,sum_i z_i^2,smooth convex,0,BBOB canonical formula
+ellipsoid,"sum_i kappa^(i/(r-1)) z_i^2, kappa=1e4","smooth strongly convex, ill-conditioned",0,BBOB canonical formula
+rastrigin,10r + sum_i (z_i^2 - 10 cos(2 pi z_i)),smooth multimodal,0,BBOB canonical formula
+rosenbrock,sum_i [100(z_{i+1}-z_i^2)^2 + (1-z_i)^2],smooth nonconvex valley,1 vector,BBOB canonical formula

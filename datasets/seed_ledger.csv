@@ -1,0 +1,171 @@
+experiment,unit,problem_seed,anchor_seed,note
+moment_calibration,rep0,22345,32345,method-specific sketch seeds are seed + rep*1000 + n_anchors*10 + len(method)
+moment_calibration,rep1,22346,32346,method-specific sketch seeds are seed + rep*1000 + n_anchors*10 + len(method)
+moment_calibration,rep2,22347,32347,method-specific sketch seeds are seed + rep*1000 + n_anchors*10 + len(method)
+moment_calibration,rep3,22348,32348,method-specific sketch seeds are seed + rep*1000 + n_anchors*10 + len(method)
+moment_calibration,rep4,22349,32349,method-specific sketch seeds are seed + rep*1000 + n_anchors*10 + len(method)
+moment_calibration,rep5,22350,32350,method-specific sketch seeds are seed + rep*1000 + n_anchors*10 + len(method)
+moment_calibration,rep6,22351,32351,method-specific sketch seeds are seed + rep*1000 + n_anchors*10 + len(method)
+moment_calibration,rep7,22352,32352,method-specific sketch seeds are seed + rep*1000 + n_anchors*10 + len(method)
+moment_calibration,rep8,22353,32353,method-specific sketch seeds are seed + rep*1000 + n_anchors*10 + len(method)
+moment_calibration,rep9,22354,32354,method-specific sketch seeds are seed + rep*1000 + n_anchors*10 + len(method)
+moment_calibration,rep10,22355,32355,method-specific sketch seeds are seed + rep*1000 + n_anchors*10 + len(method)
+moment_calibration,rep11,22356,32356,method-specific sketch seeds are seed + rep*1000 + n_anchors*10 + len(method)
+moment_calibration,rep12,22357,32357,method-specific sketch seeds are seed + rep*1000 + n_anchors*10 + len(method)
+moment_calibration,rep13,22358,32358,method-specific sketch seeds are seed + rep*1000 + n_anchors*10 + len(method)
+moment_calibration,rep14,22359,32359,method-specific sketch seeds are seed + rep*1000 + n_anchors*10 + len(method)
+moment_calibration,rep15,22360,32360,method-specific sketch seeds are seed + rep*1000 + n_anchors*10 + len(method)
+moment_calibration,rep16,22361,32361,method-specific sketch seeds are seed + rep*1000 + n_anchors*10 + len(method)
+moment_calibration,rep17,22362,32362,method-specific sketch seeds are seed + rep*1000 + n_anchors*10 + len(method)
+moment_calibration,rep18,22363,32363,method-specific sketch seeds are seed + rep*1000 + n_anchors*10 + len(method)
+moment_calibration,rep19,22364,32364,method-specific sketch seeds are seed + rep*1000 + n_anchors*10 + len(method)
+dimension_scaling,d10_r2_rep0,52365,62365,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d10_r2_rep1,52366,62366,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d10_r2_rep2,52367,62367,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d10_r2_rep3,52368,62368,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d10_r2_rep4,52369,62369,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d10_r2_rep5,52370,62370,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d10_r2_rep6,52371,62371,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d10_r2_rep7,52372,62372,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d10_r2_rep8,52373,62373,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d10_r2_rep9,52374,62374,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d10_r4_rep0,52385,62385,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d10_r4_rep1,52386,62386,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d10_r4_rep2,52387,62387,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d10_r4_rep3,52388,62388,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d10_r4_rep4,52389,62389,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d10_r4_rep5,52390,62390,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d10_r4_rep6,52391,62391,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d10_r4_rep7,52392,62392,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d10_r4_rep8,52393,62393,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d10_r4_rep9,52394,62394,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d20_r2_rep0,62365,72365,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d20_r2_rep1,62366,72366,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d20_r2_rep2,62367,72367,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d20_r2_rep3,62368,72368,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d20_r2_rep4,62369,72369,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d20_r2_rep5,62370,72370,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d20_r2_rep6,62371,72371,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d20_r2_rep7,62372,72372,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d20_r2_rep8,62373,72373,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d20_r2_rep9,62374,72374,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d20_r4_rep0,62385,72385,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d20_r4_rep1,62386,72386,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d20_r4_rep2,62387,72387,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d20_r4_rep3,62388,72388,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d20_r4_rep4,62389,72389,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d20_r4_rep5,62390,72390,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d20_r4_rep6,62391,72391,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d20_r4_rep7,62392,72392,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d20_r4_rep8,62393,72393,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d20_r4_rep9,62394,72394,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d40_r2_rep0,82365,92365,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d40_r2_rep1,82366,92366,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d40_r2_rep2,82367,92367,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d40_r2_rep3,82368,92368,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d40_r2_rep4,82369,92369,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d40_r2_rep5,82370,92370,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d40_r2_rep6,82371,92371,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d40_r2_rep7,82372,92372,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d40_r2_rep8,82373,92373,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d40_r2_rep9,82374,92374,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d40_r4_rep0,82385,92385,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d40_r4_rep1,82386,92386,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d40_r4_rep2,82387,92387,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d40_r4_rep3,82388,92388,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d40_r4_rep4,82389,92389,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d40_r4_rep5,82390,92390,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d40_r4_rep6,82391,92391,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d40_r4_rep7,82392,92392,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d40_r4_rep8,82393,92393,same RNG generates anchors and direction frames in the original runner
+dimension_scaling,d40_r4_rep9,82394,92394,same RNG generates anchors and direction frames in the original runner
+optimization,sphere_tau0.00_rep0,62345,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,sphere_tau0.00_rep1,62346,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,sphere_tau0.02_rep0,62445,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,sphere_tau0.02_rep1,62446,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,ellipsoid_tau0.00_rep0,63345,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,ellipsoid_tau0.00_rep1,63346,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,ellipsoid_tau0.02_rep0,63445,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,ellipsoid_tau0.02_rep1,63446,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rastrigin_tau0.00_rep0,64345,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rastrigin_tau0.00_rep1,64346,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rastrigin_tau0.02_rep0,64445,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rastrigin_tau0.02_rep1,64446,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rosenbrock_tau0.00_rep0,65345,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rosenbrock_tau0.00_rep1,65346,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rosenbrock_tau0.02_rep0,65445,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rosenbrock_tau0.02_rep1,65446,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,sphere_tau0.00_rep2,1062345,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,sphere_tau0.00_rep3,1062346,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,sphere_tau0.02_rep2,1062445,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,sphere_tau0.02_rep3,1062446,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,ellipsoid_tau0.00_rep2,1063345,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,ellipsoid_tau0.00_rep3,1063346,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,ellipsoid_tau0.02_rep2,1063445,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,ellipsoid_tau0.02_rep3,1063446,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rastrigin_tau0.00_rep2,1064345,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rastrigin_tau0.00_rep3,1064346,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rastrigin_tau0.02_rep2,1064445,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rastrigin_tau0.02_rep3,1064446,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rosenbrock_tau0.00_rep2,1065345,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rosenbrock_tau0.00_rep3,1065346,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rosenbrock_tau0.02_rep2,1065445,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rosenbrock_tau0.02_rep3,1065446,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,sphere_tau0.00_rep4,2062345,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,sphere_tau0.00_rep5,2062346,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,sphere_tau0.02_rep4,2062445,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,sphere_tau0.02_rep5,2062446,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,ellipsoid_tau0.00_rep4,2063345,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,ellipsoid_tau0.00_rep5,2063346,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,ellipsoid_tau0.02_rep4,2063445,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,ellipsoid_tau0.02_rep5,2063446,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rastrigin_tau0.00_rep4,2064345,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rastrigin_tau0.00_rep5,2064346,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rastrigin_tau0.02_rep4,2064445,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rastrigin_tau0.02_rep5,2064446,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rosenbrock_tau0.00_rep4,2065345,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rosenbrock_tau0.00_rep5,2065346,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rosenbrock_tau0.02_rep4,2065445,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rosenbrock_tau0.02_rep5,2065446,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,sphere_tau0.00_rep6,3062345,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,sphere_tau0.00_rep7,3062346,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,sphere_tau0.02_rep6,3062445,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,sphere_tau0.02_rep7,3062446,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,ellipsoid_tau0.00_rep6,3063345,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,ellipsoid_tau0.00_rep7,3063346,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,ellipsoid_tau0.02_rep6,3063445,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,ellipsoid_tau0.02_rep7,3063446,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rastrigin_tau0.00_rep6,3064345,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rastrigin_tau0.00_rep7,3064346,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rastrigin_tau0.02_rep6,3064445,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rastrigin_tau0.02_rep7,3064446,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rosenbrock_tau0.00_rep6,3065345,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rosenbrock_tau0.00_rep7,3065346,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rosenbrock_tau0.02_rep6,3065445,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rosenbrock_tau0.02_rep7,3065446,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,sphere_tau0.00_rep8,4062345,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,sphere_tau0.00_rep9,4062346,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,sphere_tau0.02_rep8,4062445,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,sphere_tau0.02_rep9,4062446,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,ellipsoid_tau0.00_rep8,4063345,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,ellipsoid_tau0.00_rep9,4063346,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,ellipsoid_tau0.02_rep8,4063445,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,ellipsoid_tau0.02_rep9,4063446,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rastrigin_tau0.00_rep8,4064345,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rastrigin_tau0.00_rep9,4064346,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rastrigin_tau0.02_rep8,4064445,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rastrigin_tau0.02_rep9,4064446,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rosenbrock_tau0.00_rep8,4065345,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rosenbrock_tau0.00_rep9,4065346,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rosenbrock_tau0.02_rep8,4065445,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+optimization,rosenbrock_tau0.02_rep9,4065446,method-dependent benchmark_seed + 10000*(1+method_index),see src/discoverzo/experiments.py for exact method-index mapping
+amortization,rep0,102345,103345,per-task optimization seed formula documented in experiments.py
+amortization,rep1,102346,103346,per-task optimization seed formula documented in experiments.py
+amortization,rep2,102347,103347,per-task optimization seed formula documented in experiments.py
+amortization,rep3,102348,103348,per-task optimization seed formula documented in experiments.py
+amortization,rep4,102349,103349,per-task optimization seed formula documented in experiments.py
+amortization,rep5,102350,103350,per-task optimization seed formula documented in experiments.py
+amortization,rep6,102351,103351,per-task optimization seed formula documented in experiments.py
+amortization,rep7,102352,103352,per-task optimization seed formula documented in experiments.py
+amortization,rep8,102353,103353,per-task optimization seed formula documented in experiments.py
+amortization,rep9,102354,103354,per-task optimization seed formula documented in experiments.py

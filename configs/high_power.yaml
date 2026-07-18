@@ -1,0 +1,8 @@
+seed: 12345
+bias_repetitions: 100
+scaling_repetitions: 50
+optimization_repetitions: 25
+optimization_budget: 20000
+discovery_anchors: 100
+discovery_directions_per_side: 20
+noise_std: 0.02

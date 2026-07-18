@@ -1,0 +1,9 @@
+# Smoke-test configuration; not used for manuscript claims.
+seed: 12345
+bias_repetitions: 2
+scaling_repetitions: 2
+optimization_repetitions: 2
+optimization_budget: 1200
+discovery_anchors: 5
+discovery_directions_per_side: 4
+noise_std: 0.02

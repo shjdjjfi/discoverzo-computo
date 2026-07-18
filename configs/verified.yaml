@@ -1,0 +1,9 @@
+# Exact configuration used by scripts/run_verified.py and the cached article results.
+seed: 12345
+bias_repetitions: 20
+scaling_repetitions: 10
+optimization_repetitions: 10
+optimization_budget: 4000
+discovery_anchors: 15
+discovery_directions_per_side: 12
+noise_std: 0.02
