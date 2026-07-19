@@ -1,11 +1,11 @@
 ---
-title: "Discovering active subspaces from noisy function values"
+title: "Cross-Fitted Active Subspace Discovery from Noisy Function Evaluations for Black-Box Optimization"
 subtitle: "Cross-fitted orthogonal sketches for dimension-adaptive zeroth-order optimization"
 author:
   - name: Zichen Song
     orcid: 0000-0003-4155-2410
     affiliations:
-      - name: Lanzhou University
+      - name: Sungkyunkwan University
 date: 2026-07-18
 date-modified: last-modified
 description: |
