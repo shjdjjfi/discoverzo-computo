@@ -1,6 +1,8 @@
 name: discoverzo
+
 channels:
   - conda-forge
+
 dependencies:
   - python=3.11
   - numpy>=1.26
@@ -10,6 +12,10 @@ dependencies:
   - pyyaml>=6.0
   - tqdm>=4.66
   - pytest>=8
+  - jupyter
+  - ipykernel
+  - nbclient
+  - nbformat
   - pip
   - pip:
       - -e .
