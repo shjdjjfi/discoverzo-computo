@@ -90,30 +90,129 @@ def panel_label(ax: plt.Axes, label: str) -> None:
 
 
 def make_schematic() -> None:
-    fig, ax = plt.subplots(figsize=(7.2, 2.35))
+    # 略微增加画布宽度，并统一四个框的宽度
+    fig, ax = plt.subplots(figsize=(7.4, 2.45))
     ax.set_axis_off()
+
+    box_y, box_h, box_w = 0.34, 0.40, 0.205
+    box_x = [0.025, 0.273, 0.521, 0.769]
+
     stages = [
-        (0.02, 0.30, 0.19, 0.42, "Anchor design", "Draw $X_i\\sim\\nu$\nand two frames"),
-        (0.28, 0.30, 0.19, 0.42, "Cross moment", "$4m$ calls per anchor\n$\\widetilde M_N$"),
-        (0.54, 0.30, 0.19, 0.42, "Spectral step", "Estimate $\\widehat U$\nand optionally $\\widehat r$"),
-        (0.80, 0.30, 0.18, 0.42, "Restricted search", "Optimize in\n$x_0+\\operatorname{span}(\\widehat U)$"),
+        (
+            box_x[0], box_y, box_w, box_h,
+            "Anchor design",
+            "Draw $X_i\\sim\\nu$\nand two frames",
+        ),
+        (
+            box_x[1], box_y, box_w, box_h,
+            "Cross moment",
+            "$4m$ calls per anchor\n$\\widetilde M_N$",
+        ),
+        (
+            box_x[2], box_y, box_w, box_h,
+            "Spectral step",
+            "Estimate $\\widehat U$\nand optionally $\\widehat r$",
+        ),
+        (
+            box_x[3], box_y, box_w, box_h,
+            "Restricted search",
+            "Optimize in\n$x_0+\\operatorname{span}(\\widehat U)$",
+        ),
     ]
+
+    # 不再继承全局的较大字体，单独控制流程图字号
+    title_fs = 8.7
+    body_fs = 8.2
+
     for i, (x, y, w, h, title, body) in enumerate(stages):
-        box = FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.016,rounding_size=0.018",
-                             linewidth=0.9, edgecolor="#333333", facecolor="#F7F7F7")
+        box = FancyBboxPatch(
+            (x, y),
+            w,
+            h,
+            boxstyle="round,pad=0.012,rounding_size=0.018",
+            linewidth=0.9,
+            edgecolor="#333333",
+            facecolor="#F7F7F7",
+        )
         ax.add_patch(box)
-        ax.text(x+w/2, y+h*0.70, title, ha="center", va="center", fontweight="bold")
-        ax.text(x+w/2, y+h*0.36, body, ha="center", va="center", linespacing=1.25)
-        if i < len(stages)-1:
-            nx = stages[i+1][0]
-            ax.add_patch(FancyArrowPatch((x+w+0.012, y+h/2), (nx-0.012, y+h/2),
-                                         arrowstyle="-|>", mutation_scale=10,
-                                         linewidth=0.8, color="#444444"))
-    ax.text(0.375, 0.14, "Discovery budget", ha="center", fontstyle="italic")
-    ax.plot([0.02, 0.73], [0.19, 0.19], color="#777777", lw=0.7)
-    ax.text(0.89, 0.14, "Optimization budget", ha="center", fontstyle="italic")
-    ax.plot([0.80, 0.98], [0.19, 0.19], color="#777777", lw=0.7)
-    ax.set_xlim(0, 1); ax.set_ylim(0, 1)
+
+        ax.text(
+            x + w / 2,
+            y + h * 0.72,
+            title,
+            ha="center",
+            va="center",
+            fontsize=title_fs,
+            fontweight="bold",
+        )
+
+        ax.text(
+            x + w / 2,
+            y + h * 0.34,
+            body,
+            ha="center",
+            va="center",
+            fontsize=body_fs,
+            linespacing=1.18,
+        )
+
+        if i < len(stages) - 1:
+            nx = stages[i + 1][0]
+
+            ax.add_patch(
+                FancyArrowPatch(
+                    (x + w + 0.006, y + h / 2),
+                    (nx - 0.006, y + h / 2),
+                    arrowstyle="-|>",
+                    mutation_scale=9,
+                    linewidth=0.8,
+                    color="#444444",
+                )
+            )
+
+    # 横线和文字分别设置纵坐标，避免二者贴在一起
+    budget_y = 0.205
+    label_y = 0.155
+
+    # Discovery budget
+    ax.plot(
+        [box_x[0], box_x[2] + box_w],
+        [budget_y, budget_y],
+        color="#777777",
+        lw=0.7,
+    )
+
+    ax.text(
+        (box_x[0] + box_x[2] + box_w) / 2,
+        label_y,
+        "Discovery budget",
+        ha="center",
+        va="top",
+        fontsize=8.6,
+        fontstyle="italic",
+    )
+
+    # Optimization budget
+    ax.plot(
+        [box_x[3], box_x[3] + box_w],
+        [budget_y, budget_y],
+        color="#777777",
+        lw=0.7,
+    )
+
+    ax.text(
+        box_x[3] + box_w / 2,
+        label_y,
+        "Optimization budget",
+        ha="center",
+        va="top",
+        fontsize=8.6,
+        fontstyle="italic",
+    )
+
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+
     finish(fig, "fig01_workflow")
 
 
