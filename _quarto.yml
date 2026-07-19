@@ -1,16 +1,16 @@
 project:
-  title: "Discovering active subspaces from noisy function values"
+  title: "Cross-Fitted Active Subspace Discovery from Noisy Function Evaluations for Black-Box Optimization"
   render:
     - main.qmd
     - README.qmd
 status: submitted
 
-title: "Discovering active subspaces from noisy function values"
+title: "Cross-Fitted Active Subspace Discovery from Noisy Function Evaluations for Black-Box Optimization"
 author:
   - name: Zichen Song
     orcid: 0000-0003-4155-2410
     affiliations:
-      - name: Lanzhou University
+      - name: Sungkyunkwan University
 date: 2026-07-18
 abstract: >+
   High-dimensional black-box objectives may vary mainly along a low-dimensional linear subspace, but that subspace must itself be learned from function values. This article develops and audits a cross-fitted moment estimator based on independent orthogonal finite-difference sketches, derives its finite-sample and optimization consequences, and evaluates the complete query-accounted pipeline on public BBOB function formulas.
