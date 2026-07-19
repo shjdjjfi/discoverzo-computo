@@ -23,7 +23,7 @@ github-user: shjdjjfi
 repo: discoverzo-computo
 license: CC BY 4.0
 status: submitted
-draft: true
+draft: false
 published: false
 google-scholar: false
 format:
