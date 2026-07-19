@@ -244,33 +244,103 @@ def make_calibration() -> None:
 def make_scaling() -> None:
     df = pd.read_csv(SUMMARY / "dimension_scaling_summary.csv")
     adaptive = df[df.method == "cross_adaptive"].copy()
-    known = df[df.method == "cross_known_rank"].copy()
-    fig, axes = plt.subplots(1, 2, figsize=(7.25, 2.75))
+
+    fig, axes = plt.subplots(1, 2, figsize=(7.25, 3.0))
+
+    # -------------------------
+    # (a) 左图：误差曲线
+    # -------------------------
     for r, marker in [(2, "o"), (4, "s")]:
-        for method, ls, color in [("cross_known_rank", "-", "#0072B2"), ("cross_adaptive", "--", "#D55E00")]:
+        for method, ls, color in [
+            ("cross_known_rank", "-", "#0072B2"),
+            ("cross_adaptive", "--", "#D55E00"),
+        ]:
             d = df[(df.method == method) & (df.r == r)].sort_values("d")
-            axes[0].errorbar(d.d, d.subspace_error_mean, yerr=d.subspace_error_se,
-                             marker=marker, ms=4, lw=1.25, capsize=2,
-                             linestyle=ls, color=color,
-                             label=f"{'Known' if method.endswith('known_rank') else 'Adaptive'}, r={r}")
+            axes[0].errorbar(
+                d.d,
+                d.subspace_error_mean,
+                yerr=d.subspace_error_se,
+                marker=marker,
+                ms=4,
+                lw=1.25,
+                capsize=2,
+                linestyle=ls,
+                color=color,
+                label=f"{'Known' if method.endswith('known_rank') else 'Adaptive'}, r={r}",
+            )
+
     axes[0].set_xlabel("Ambient dimension $d$")
     axes[0].set_ylabel(r"Subspace error $\|\sin\Theta\|_{\mathrm{op}}$")
-    axes[0].set_xticks(sorted(df.d.unique())); axes[0].grid(True)
-    panel_label(axes[0], "a")
+    axes[0].set_xticks([10, 20, 30, 40])   # 强制保留 30
+    axes[0].set_xlim(8.5, 41.5)
+    axes[0].grid(True)
+
+    # 面板字母上移
+    axes[0].text(
+        -0.14, 1.12, "a",
+        transform=axes[0].transAxes,
+        fontweight="bold",
+        va="top"
+    )
+
+    # 图例放到子图外上方
+    handles0, labels0 = axes[0].get_legend_handles_labels()
+    axes[0].legend(
+        handles0,
+        labels0,
+        frameon=False,
+        ncol=2,
+        loc="lower center",
+        bbox_to_anchor=(0.5, 1.18),
+        borderaxespad=0.0,
+    )
+
+    # -------------------------
+    # (b) 右图：rank recovery 柱状图
+    # -------------------------
     width = 2.8
-    dims = sorted(adaptive.d.unique())
-    for i, r in enumerate([2,4]):
+    dims_all = [10, 20, 30, 40]   # 强制显示 30
+    for i, r in enumerate([2, 4]):
         d = adaptive[adaptive.r == r].sort_values("d")
-        axes[1].bar(d.d + (i-0.5)*width, 100*d.rank_recovery, width=width,
-                    edgecolor="white", linewidth=0.5,
-                    label=f"True rank {r}")
+        axes[1].bar(
+            d.d + (i - 0.5) * width,
+            100 * d.rank_recovery,
+            width=width,
+            edgecolor="white",
+            linewidth=0.5,
+            label=f"True rank {r}",
+        )
+
     axes[1].set_xlabel("Ambient dimension $d$")
     axes[1].set_ylabel("Exact rank recovery (%)")
-    axes[1].set_xticks(dims); axes[1].set_ylim(0,105); axes[1].grid(True, axis="y")
-    panel_label(axes[1], "b")
-    axes[0].legend(frameon=False, ncol=2, loc="upper left")
-    axes[1].legend(frameon=False, loc="lower left")
-    fig.subplots_adjust(wspace=0.28)
+    axes[1].set_xticks(dims_all)          # 显示 10,20,30,40
+    axes[1].set_xlim(6, 44)               # 给 30 留出明确空间
+    axes[1].set_ylim(0, 105)
+    axes[1].grid(True, axis="y")
+
+    # 面板字母上移
+    axes[1].text(
+        -0.14, 1.12, "b",
+        transform=axes[1].transAxes,
+        fontweight="bold",
+        va="top"
+    )
+
+    # 图例放到子图外上方
+    handles1, labels1 = axes[1].get_legend_handles_labels()
+    axes[1].legend(
+        handles1,
+        labels1,
+        frameon=False,
+        ncol=2,
+        loc="lower center",
+        bbox_to_anchor=(0.5, 1.18),
+        borderaxespad=0.0,
+    )
+
+    # 给顶部图例留空间
+    fig.subplots_adjust(top=0.73, wspace=0.30)
+
     finish(fig, "fig03_dimension_scaling")
 
 
