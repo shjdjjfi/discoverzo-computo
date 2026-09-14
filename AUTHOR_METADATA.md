@@ -1,4 +1,4 @@
-# Author metadata to complete before submission
+# Author metadata to complete before submissions
 
 The source uses the verified ORCID supplied for Zichen Song and the affiliation `Lanzhou University`. Before submitting to Computo:
 
