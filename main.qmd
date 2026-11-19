@@ -1,17 +1,12 @@
 ---
 title: "Cross-Fitted Active Subspace Discovery from Noisy Function Evaluations for Black-Box Optimization"
 subtitle: "Cross-fitted orthogonal sketches for dimension-adaptive zeroth-order optimization"
-author:
-  - name: Zichen Song
-    orcid: 0000-0003-4155-2410
-    affiliations:
-      - name: Sungkyunkwan University
 date: 2026-07-18
 date-modified: last-modified
 description: |
   A theoretical and reproducible study of cross-fitted active-subspace discovery from noisy black-box evaluations, with exact query accounting and public benchmark formulas.
 abstract: >+
-  High-dimensional black-box objectives may vary mainly along a low-dimensional linear subspace, but that subspace must itself be learned from function values. We study this discovery phase as a statistical estimation problem. At each anchor point, two independent orthogonal finite-difference sketches are cross-fitted, and their symmetrized cross product estimates the second moment of the smoothed gradient without the self-product inflation induced by random directional gradients. We prove conditional calibration, derive the exact population distortion of an arbitrary orthogonal-batch self outer product, establish operator-norm concentration and eigenspace recovery under bounded sketches, give a sufficient condition for eigengap-based rank recovery, and quantify how subspace error propagates into a convex optimization floor. A Gaussian-oracle lower bound shows that ambient dimension remains unavoidable in the one-time discovery cost. The accompanying Python artifact enforces an exact query ledger and evaluates moment calibration, rank recovery, single-task optimization, approximate ridge structure, and reuse across related objectives using public BBOB function formulas. The experiments reveal a principled bias--variance trade-off: self outer products can recover eigenspaces more accurately at finite sample sizes, whereas cross-fitting is calibrated as a matrix estimator. After discovery queries are charged, learned subspaces are useful in selected smooth settings and under reuse, but do not uniformly improve a local optimizer, especially on multimodal objectives.
+  We study how to estimate an active subspace when a black-box oracle returns noisy scalar function values. At each sampled point, we construct two independent finite-difference estimates using random orthogonal directions. Their symmetrized cross product is unbiased for the outer product of the gradient of the ball-smoothed objective under independent, mean-zero observation noise. For exact directional derivatives, including centered differences of quadratic objectives, the population bias of the conventional self outer product has a closed-form inverse. With homoskedastic noise of known variance, the correction also removes the isotropic noise contribution. This correction needs no extra function evaluations and preserves the self product's leading eigenspaces. We give operator-norm and eigenspace bounds for the cross-fitted estimate under bounded sketches and relate subspace error to the approximation error of restricted convex optimization. A rank-one Gaussian-oracle example gives an ambient-dimensional lower bound on discovery. Numerical studies illustrate the distinction between matrix error, subspace error, and final objective value when discovery queries count toward the optimization budget.
 keywords: [zeroth-order optimization, active subspaces, black-box optimization, cross-fitting, orthogonal sketches, dimension reduction, reproducible research]
 citation:
   type: article-journal
@@ -43,58 +38,51 @@ jupyter: python3
 
 # Introduction {#sec-introduction}
 
-A black-box optimizer receives function values but no gradients. Its basic statistical difficulty is dimensional: a random directional derivative in an ambient space of dimension $d$ spreads information across $d$ coordinates, and the variance of a standard two-point gradient estimate typically grows with dimension [@nesterov2017random; @duchi2015optimal; @shamir2017optimal]. Yet many scientific and operational simulators have much lower *effective* dimension. Their outputs change strongly only along a few combinations of parameters, even though the input vector itself is long; aerodynamic shape studies provide one representative application [@hall2021active]. Active-subspace analysis formalizes this observation through the leading eigenspace of the gradient second-moment matrix [@constantine2015active], and randomized gradient sketches can reduce the cost when derivatives are available [@constantine2015sketching]. Random embedding and trajectory-informed methods use related ideas to reduce black-box search [@nayebi2019hesbo; @golovin2020gradientless; @nozawa2024zeroth].
+A simulator may depend strongly on only a few combinations of its inputs, as in some airfoil parameter studies [@grey2018active]. Active-subspace analysis identifies those combinations from the leading eigenvectors of an average gradient outer product [@constantine2015active]. We study how accurately that matrix and its leading eigenspace can be estimated when the simulator returns only noisy scalar function values. This is a statistical estimation problem motivated by derivative-free, or zeroth-order (ZO), optimization.
 
-A central cost is often hidden in this literature. Before an optimizer can work in an $r$-dimensional subspace, it must discover that subspace from observations. When gradients are available, one may estimate the active-subspace matrix from gradient outer products. Under a function-value oracle, however, each gradient is itself a noisy random-direction estimate. Squaring that estimate creates a fourth-moment distortion. The distortion does not necessarily rotate population eigenvectors, but it changes the target spectrum, creates a nonzero spectral tail, complicates rank selection, and prevents the matrix estimate from being calibrated in operator norm.
+Two function evaluations on either side of a sampled point give a centered finite difference along one direction. One could use fixed coordinate directions, which gives a deterministic approximation when evaluations are noiseless. We use random orthogonal directions and combine the differences into a vector estimate, called a *gradient sketch*. The matrix formed by multiplying this vector by its transpose includes the sketch's covariance. Even with exact directional derivatives, random projection changes the expected spectrum.
 
-This article treats structure discovery as a first-class statistical problem. At each anchor point, we create two independent gradient sketches and cross-fit them: the first sketch is multiplied by the second rather than by itself. Conditional independence makes the resulting cross-moment target the outer product of the *mean* sketch. Orthogonal direction batches reduce within-anchor variance without changing the query ledger. The result is then used to estimate the active subspace, select its dimension, and restrict a two-point optimizer.
+At each sampled point, or *anchor*, we form two independent sketches and average the symmetrized products between them. We call this construction cross-fitting. The mean sketch is the gradient of the ball-smoothed objective, which averages the function uniformly over a ball around the anchor. We establish three results.
 
-The contribution is deliberately narrower than a claim that subspace optimization always dominates full-dimensional optimization. We establish the following.
+1. **Population targets.** The raw cross-fitted estimator is unbiased for the smoothed gradient second moment under independent, mean-zero observation noise. For exact directional derivatives, we use the closed-form projection correction of Azizyan et al. [@azizyan2018extreme] and derive the additional adjustment for independent homoskedastic observation noise with known variance.
+2. **Finite-sample recovery.** Under bounded sketches, matrix Bernstein and Davis--Kahan give operator-norm and principal-angle bounds for the cross-fitted estimator. We give a sufficient condition for rank recovery by spectral thresholding and a discovery lower bound for a rank-one family with Gaussian observations.
+3. **Optimization after discovery.** For the convex setting in @thm-transfer, the error from restricting the search to an estimated subspace is bounded by its squared principal-angle error times a smoothness and distance factor. The numerical study charges for discovering the subspace and measures the objective value reached by a two-point optimizer, whose updates each use two perturbed evaluations.
 
-1. **A calibrated cross-fitted moment estimator.** For the ball-smoothed objective, the raw symmetrized cross moment is conditionally unbiased for the gradient outer product. For quadratic ridge functions, centered finite differences remove smoothing bias exactly.
-2. **A transparent comparison with self outer products.** For a one-direction noiseless sketch, the expectation of the conventional outer product is derived exactly. It contains both multiplicative and isotropic inflation. This explains why the ordinary estimator may have good finite-sample eigenvectors while remaining poorly calibrated as a matrix estimator.
-3. **Finite-sample structure recovery.** A matrix Bernstein argument gives operator-norm concentration under bounded or clipped sketches; Davis--Kahan perturbation converts this into a principal-angle guarantee, and an eigengap selector is correct when the estimation error is below a signal-dependent threshold.
-4. **An optimization transfer principle.** The final error separates into optimization error inside the estimated subspace and an approximation floor proportional to the squared principal-angle error. A stochastic two-point corollary makes the intrinsic dimension explicit.
-5. **A discovery lower bound.** Under a Gaussian function-value oracle, estimating an unknown rank-one direction to angle $\varepsilon$ requires order $d/\varepsilon^2$ observations up to signal-to-noise factors. Ambient dimension can therefore be shifted into a one-time discovery phase, but cannot generally be eliminated.
-6. **A complete reproducible artifact.** The repository includes source code, tests, fixed experiment configurations, raw outputs, summaries, paired bootstrap analyses, figures, environment files, and a Quarto manuscript. The default benchmark functions use public canonical BBOB formulas; an optional adapter connects to the official COCO suite [@hansen2016coco].
-
-The empirical results are intentionally diagnostic. Cross-fitting eventually improves operator calibration, but the self outer product has lower finite-sample subspace error in the tested quadratic setting. In optimization, an accurately estimated subspace helps smooth ridge objectives and can be amortized over related tasks. It may offer no advantage on one isolated task after charging the discovery budget, and subspace restriction can be actively harmful on multimodal functions. These negative results define the method's domain of usefulness.
+The accompanying reproducibility package contains the study code, configurations, recorded outputs, and scripts for producing the figures and tables.
 
 # Relation to existing approaches {#sec-related}
 
 ## Active subspaces with and without gradients
 
-The classical active-subspace matrix is a population covariance of gradients [@constantine2015active]. When exact or adjoint gradients are available, it can be estimated directly, and randomized linear measurements can lower the cost of collecting those gradients [@constantine2015sketching]. The present problem is statistically different: only scalar function values are observed, so every gradient-like vector is itself a random finite-difference estimate. The target matrix is therefore not observed with ordinary additive noise. A self outer product squares both the signal and the directional-estimation error, producing a structured population distortion before finite-sample concentration is considered.
+The active-subspace matrix is an uncentered gradient second moment [@constantine2015active]. Zahm et al. [@zahm2020gradient] relate Jacobian-based projections to function approximation for vector-valued outputs. Constantine et al. [@constantine2015sketching] estimate active subspaces from gradient sketches, including sketches obtained from directional derivatives. Here we use centered differences of noisy function values, and the object we estimate is the complete moment matrix. Its eigenvalues matter when estimating rank or measuring variation outside the leading subspace.
 
-This distinction also separates the article from application-specific active-subspace studies, where the gradient matrix is often treated as an input to dimension reduction. Here, estimating that matrix is the primary inferential task. Matrix calibration matters because the spectral tail is used to diagnose approximate ridge structure and to select a dimension. An estimator that preserves eigenvectors while shifting the spectrum can be adequate for a known-rank projection but misleading for rank adaptation.
+Constantine and Gleich [@constantine2014monte] analyze Monte Carlo outer products of exact gradients and extend their bounds to uniformly accurate approximate gradients. Holodnak et al. [@holodnak2018probabilistic] obtain an intrinsic-dimension bound for a positive-semidefinite Monte Carlo approximation. We use the same concentration and perturbation framework in @thm-concentration and @cor-subspace. The summands here are symmetric cross products that can be indefinite, with expectation $M_h$ given by @prp-unbiased. Their error bound is in terms of the size of the sketches, and comparison with the unsmoothed eigenspace includes a separate smoothing error.
 
-## Embedded and random-subspace optimization
+## Orthogonal finite differences and smoothed moments
 
-Random embeddings reduce a high-dimensional search to a lower-dimensional auxiliary problem without first identifying a population active subspace [@nayebi2019hesbo]. Random-subspace zeroth-order methods similarly restrict individual updates or local searches to sampled low-dimensional spaces [@nozawa2024zeroth]. These methods can be effective even when no fixed subspace is learned. Their principal advantage is that they avoid a separate discovery stage; their limitation for the present purpose is that they do not estimate a reusable, interpretable structural object.
+Feng and Wang [@feng2023stochastic] study the bias and variance of centered gradient estimates formed from random orthogonal directions. We use this same gradient construction. @prp-unbiased applies its exact mean under ball smoothing to a product of two independent estimates at the same point. This uses the elementary factorization of the expectation of a product of independent estimators. @prp-inflation and the subsequent correction address the alternative of using one orthogonal sketch per point.
 
-The learned-subspace setting has a different cost profile. It pays an ambient-dimensional acquisition cost once and can then reuse the estimated projector over many iterations or related tasks. This creates the central question studied here: when is the statistical accuracy of a learned subspace sufficient to offset its query cost? The answer depends jointly on eigengap, finite-difference noise, downstream curvature, optimization horizon, and the number of tasks over which discovery is amortized.
+Yuan et al. [@yuan2025smoothed] estimate an expected Gaussian-smoothed gradient outer product for multiple-index regression. They form independent gradient estimates using separate groups of regression observations and obtain a parametric $C_d n^{-1/2}$ rate. For polynomial links of degree at most $p$ under standard Gaussian design, they give $C_d$ proportional to $d^p$. Our setting permits queries at paired points around each chosen anchor, yielding a ball-smoothed target with a fixed number of evaluations per anchor.
 
-## Zeroth-order oracle complexity
+The self-product formula and its inverse are known for compressed covariance estimation [@azizyan2018extreme, Proposition 1]. In @prp-inflation we identify the latent vector as the gradient at an anchor. The explicit correction in @sec-self-correction then accounts for the extra noise due to differencing two independent function values and specifies when finite differences give the exact linear sketch.
 
-Two-point zeroth-order methods attain sharp rates for several convex oracle models, but their gradient-estimator variance and oracle complexity retain an explicit dimension dependence [@duchi2015optimal; @nesterov2017random; @shamir2017optimal]. Trajectory-informed methods and high-dimensional gradientless procedures exploit additional structure to reduce empirical cost [@golovin2020gradientless]. Our analysis is complementary: it isolates one source of reusable structure, quantifies the error of learning it, and then propagates that error into a restricted optimization problem.
+## Low-dimensional derivative-free optimization
 
-The contribution is not a new universally superior black-box optimizer. To avoid conflating representation learning with optimizer design, the experiments use the same two-point update family across oracle, learned, random, and full-dimensional spaces. General-purpose global optimizers such as CMA-ES are outside the comparison because a victory or loss against a different search mechanism would not identify whether the active-subspace estimator itself was responsible. The public COCO adapter is included for a future optimizer-level benchmark, but the claims in this article remain estimator- and mechanism-focused.
+Djolonga et al. [@djolonga2013high] learn a low-dimensional representation from function values for Gaussian-process optimization. Cartis et al. [@cartis2024learning] estimate a subspace of variation from sampled gradients and study global convergence of a sequence of reduced problems. Random embeddings and random-subspace methods reduce the dimension of individual searches or local models [@nayebi2019hesbo; @nozawa2024zeroth; @chen2024quadratic], and trajectory-informed methods exploit structure found during search [@golovin2020gradientless]. Our discovery stage estimates a single population eigenspace that can be reused across updates or related objectives.
 
-## Cross-fitting as a noise-decoupling device
-
-Cross-fitting is used here in a literal moment-estimation sense: two conditionally independent sketches are multiplied so that their independent zero-mean errors do not contribute a self-covariance term. No sample-splitting claim about nuisance-function estimation is needed. The relevant ingredients are conditional independence, a common conditional mean, and a symmetrized product. This simple construction gives an exactly interpretable population target, but not automatically the smallest finite-sample variance. The theoretical and empirical comparison with self products therefore emphasizes estimands and risk criteria rather than labeling one estimator uniformly best.
+ASTARS and FAASTARS already use active subspaces to accelerate noisy derivative-free optimization [@hall2021astars]. FAASTARS learns the subspace and optimizer hyperparameters, including noise information. We focus on the matrix used to learn the subspace from noisy values. @thm-transfer bounds the objective penalty of using an estimated affine search space under its convex feasibility assumptions. The two-point analysis uses standard zeroth-order updates [@duchi2015optimal; @nesterov2017random; @shamir2017optimal]. The experiments use a shared update rule to examine how choice of subspace and the cost of discovery affect the attained objective.
 
 # Problem formulation {#sec-problem}
 
 ## Function-value oracle
 
-Let $\mathcal X\subseteq \mathbb R^d$ be a compact convex set. The algorithm queries
+Let $\mathcal X\subseteq \mathbb R^d$ be a compact convex search set. We assume $f$ and its oracle are defined at all perturbation points used below. The oracle returns
 
 $$
 Y(x)=f(x)+\xi,
 $$
 
-where $\mathbb E[\xi\mid x]=0$. Independent calls have independent noise unless stated otherwise. The primary structural object is the gradient second moment under an anchor distribution $\nu$:
+where $\mathbb E[\xi\mid x]=0$. Unless stated otherwise, each call uses a fresh noise draw conditional on its query location. The exact gradient defines the population target but is unavailable to the algorithm. For anchor distribution $\nu$, this target is
 
 $$
 M=\mathbb E_{X\sim\nu}
@@ -116,46 +104,52 @@ $$
 f(x)=\phi(U_\star^\top(x-s)),
 $$
 
-where $s$ is a shift. We also consider an approximate ridge model,
+where $s$ lets us translate benchmark instances while controlling the location of the minimizer. It can be absorbed into $\phi$ in the exact ridge model. For the approximate-ridge benchmarks we use
 
 $$
 f_\tau(x)=\phi(U_\star^\top(x-s))
 +\frac{\tau}{2}\Vert(I-U_\star U_\star^\top)(x-s)\Vert_2^2,
 $$
 
-with $\tau\geq0$. This construction gives a controlled departure from exact low-dimensional structure while retaining a known reference subspace.
+with $\tau\geq0$. The extra term penalizes a displacement orthogonal to the reference subspace, with strength $\tau$. Setting $\tau=0$ recovers the exact ridge. When $\tau>0$, the embedded subspace is known by construction and the ordering of the full gradient-moment eigenvalues depends on the objective and anchor law.
 
 ## Assumptions and scope
 
-The analysis deliberately separates assumptions needed for different conclusions. @prp-unbiased requires only differentiability sufficient for ball smoothing, conditionally independent direction frames, and independent mean-zero noise across the two sketches. The concentration result adds boundedness, which can be enforced by clipping at the cost of a clipping-bias term. The eigenspace and rank statements require a non-negligible spectral gap. The optimization-transfer theorem is convex and local to a feasible affine representative. Finally, the lower bound uses a Gaussian oracle only to obtain a transparent Kullback--Leibler calculation.
+| Result | Principal assumptions | Conclusion |
+|:---|:---|:---|
+| @prp-unbiased | Ball-smoothing identity, independent uniform orthogonal frames, independent mean-zero noise | Raw cross moment targets the smoothed moment |
+| @prp-inflation and @sec-self-correction | One uniform orthogonal frame and exact directional derivatives. The noisy correction also requires independent errors of known constant variance | Self-product population bias and its inverse |
+| @thm-concentration | Independent anchors and sketch pairs, with almost surely bounded sketch norms | Operator-norm error for the raw cross moment |
+| @cor-subspace | A positive eigengap, with matrix error at most half the gap | Principal-angle error |
+| @prp-rank | Exact-rank target and a threshold between the noise and signal eigenvalues as specified in the proposition | Rank recovery by spectral thresholding |
+| @thm-transfer | Convex smooth objective, stationary optimum, and a feasible projected representative | Objective error due to subspace restriction |
+| @thm-lower | Rank-one quadratic family, Gaussian noise, queries in the unit ball | Lower bound on queries for direction estimation |
 
-These assumptions are not silently transferred to the entire experimental suite. The numerical optimization study includes nonconvex Rosenbrock and multimodal Rastrigin objectives, for which @thm-transfer is not a global convergence theorem. Gaussian observation noise is unbounded, whereas @thm-concentration is stated for bounded or clipped sketches. Those experiments are stress tests of the implemented procedure, not empirical proofs of the theorem outside its hypotheses. This separation between proved scope and computational scope is maintained throughout the article.
+The Gaussian-noise benchmarks use unbounded sketches. Sphere and Ellipsoid illustrate convex objectives, and Rosenbrock and Rastrigin test the same numerical procedure on nonconvex objectives.
 
 ## What must be estimated
 
-There are three distinct targets.
+We measure three errors.
 
-- **Matrix calibration:** estimate $M$ in operator norm. This matters for spectrum interpretation and downstream uncertainty bounds.
-- **Subspace recovery:** estimate the projector $P_\star=U_\star U_\star^\top$. The loss is
+- **Matrix error.** We measure the operator-norm distance to $M$, or to its smoothed counterpart $M_h$ when stating estimation guarantees.
+- **Subspace error.** We estimate the projector $P_\star=U_\star U_\star^\top$. For subspaces of the same dimension, the loss is
   $$
   \mathcal L_{\mathrm{sub}}(\widehat U,U_\star)
   =\Vert\sin\Theta(\widehat U,U_\star)\Vert_{\mathrm{op}}.
   $$
-- **Optimization:** minimize $f$ with a total query budget that includes both discovery and optimization.
-
-These targets need not rank estimators identically. An estimator can preserve the leading eigenspace while being a biased estimate of $M$. Conversely, a calibrated estimator may have higher finite-sample eigenvector variance. The experiments separate these criteria.
+- **Optimization error.** We measure the objective gap after charging both discovery and optimization calls to the total budget.
 
 # Cross-fitted orthogonal sketches {#sec-method}
 
 ## Centered directional differences
 
-For a unit direction $u$, smoothing radius $h>0$, and anchor $x$, define
+For a unit direction $u$, finite-difference radius $h>0$, and anchor $x$, define the standard centered difference [@berahas2019comparison]
 
 $$
 \delta_hY(x;u)=\frac{Y(x+hu)-Y(x-hu)}{2h}.
 $$
 
-For a matrix $Q=[q_1,\ldots,q_m]\in\mathbb R^{d\times m}$ with orthonormal columns, define the batched sketch
+Using fixed coordinate directions gives the usual coordinate-wise finite-difference gradient estimate. Here we sample a uniform orthogonal frame $Q=[q_1,\ldots,q_m]\in\mathbb R^{d\times m}$, with $1\leq m\leq d$, and form
 
 $$
 \widehat g_Q(x)
@@ -168,9 +162,9 @@ $$
 \mathbb E[QQ^\top]=\frac{m}{d}I_d.
 $$
 
-Orthogonal directions provide a variance-reduced alternative to $m$ independent directions. They also avoid spending several nearly collinear probes at the same anchor.
+The sketch uses $2m$ evaluations. Orthogonality avoids nearly collinear probes within a batch. Feng and Wang [@feng2023stochastic] quantify the resulting variance reduction for gradient estimation.
 
-The implementation is short and exposes the exact query count.
+Two independent batches per anchor give the following call count.
 
 ```{python}
 #| eval: false
@@ -186,7 +180,7 @@ result = estimator.estimate(oracle, d=12, n_anchors=15, rng=rng)
 print(result.query_count)  # 4 * 12 * 15 = 720
 ```
 
-## Cross fitting
+## Cross-fitting
 
 At anchor $X_i$, draw two independent orthogonal frames $Q_i$ and $R_i$ and form
 
@@ -213,17 +207,17 @@ $$
 \widehat M_N=\Pi_{\mathbb S_+^d}(\widetilde M_N),
 $$
 
-where negative eigenvalues are truncated. All unbiasedness statements below concern the raw estimator $\widetilde M_N$. The PSD projection is a numerical post-processing step; it is nonexpansive in Frobenius norm toward a PSD target but is not asserted to preserve operator-norm unbiasedness.
+where negative eigenvalues are truncated. This projection can change the expectation. The calibration identity below applies to the raw estimator $\widetilde M_N$.
 
 ## Mean sketch and smoothing target
 
-Let $B_d=\{z\in\mathbb R^d:\Vert z\Vert\leq1\}$ and let $f_h$ denote uniform-ball smoothing,
+Let $B_d=\{z\in\mathbb R^d:\Vert z\Vert\leq1\}$ and let $f_h$ be the average of $f$ over the ball of radius $h$ centered at $x$,
 
 $$
 f_h(x)=\mathbb E_{V\sim\mathrm{Unif}(B_d)}[f(x+hV)].
 $$
 
-The standard spherical identity gives
+The spherical identity for this average [@flaxman2005online] gives
 
 $$
 \nabla f_h(x)
@@ -231,12 +225,12 @@ $$
 \left[\delta_h f(x;U)U\right].
 $$
 
-The same identity holds for a random orthogonal batch after averaging its columns.
+Each column of $Q$ is marginally uniform on the sphere. This is why the mean of the finite-difference sketch involves smoothing even though the algorithm never evaluates the ball average directly.
 
 ::: {#prp-unbiased}
 ## Conditional cross-moment calibration
 
-Assume independent, mean-zero oracle noise across all calls and independent frames $Q,R$ conditional on $X=x$. Then
+Suppose the ball-smoothing identity holds and $Q,R$ are independent uniform orthogonal frames conditional on $X=x$. Assume fresh, conditionally mean-zero noise across the oracle calls. Then
 
 $$
 \mathbb E[\widehat g_Q(x)\mid X=x]
@@ -263,9 +257,9 @@ $$
 $$
 :::
 
-For a quadratic function, the centered difference equals the exact directional derivative. Thus $M_h=M$ for every $h$ and Proposition 1 has no smoothing bias. For a three-times differentiable objective with bounded third derivative, $\Vert\nabla f_h-\nabla f\Vert=O(h^2)$ and $\Vert M_h-M\Vert_{\mathrm{op}}=O(h^2)$ under bounded gradients.
+For a quadratic function, the centered difference equals the exact directional derivative, and $M_h=M$ for every allowed $h$. If the third derivative is bounded on the perturbed anchor domain, symmetry of the ball gives $\Vert\nabla f_h-\nabla f\Vert=O(h^2)$. Under bounded gradients, this yields $\Vert M_h-M\Vert_{\mathrm{op}}=O(h^2)$.
 
-## Why not square one sketch?
+## Population moment of one sketch
 
 The conventional estimator uses
 
@@ -274,12 +268,12 @@ $$
 =\frac1N\sum_{i=1}^N\widehat g_i\widehat g_i^\top.
 $$
 
-For one noiseless random direction and an exact directional derivative, its population target is available in closed form.
+The following identity specializes the compressed-covariance formula of Azizyan et al. [@azizyan2018extreme, Proposition 1] to exact directional derivatives of a gradient.
 
 ::: {#prp-inflation}
-## Exact inflation for an orthogonal batch
+## Self-product bias for an orthogonal batch
 
-Fix $g\in\mathbb R^d$. Let $Q\in\mathbb R^{d\times m}$, $1\leq m\leq d$, be Haar distributed on the Stiefel manifold, set $P=QQ^\top$, and define the noiseless orthogonal-batch sketch $\widehat g_Q=(d/m)Pg$. Then
+Fix $g\in\mathbb R^d$ with $d\geq2$. Let $Q\in\mathbb R^{d\times m}$, $1\leq m\leq d$, be Haar distributed on the Stiefel manifold, set $P=QQ^\top$, and define the sketch $\widehat g_Q=(d/m)Pg$ from the exact directional derivatives $Q^\top g$. Then
 
 $$
 \mathbb E[\widehat g_Q\widehat g_Q^\top]
@@ -305,16 +299,35 @@ $$
 \left(2gg^\top+\Vert g\Vert_2^2I_d\right),
 $$
 
-whereas for $m=d$ the sketch is exact and $\alpha_{d,d}=1$, $\beta_{d,d}=0$.
+For $m=d$ the sketch is exact and $\alpha_{d,d}=1$, $\beta_{d,d}=0$. The map is also the identity in the scalar case $d=m=1$.
 :::
 
-The formula matches the orthogonal batches used in the implementation rather than analyzing only the one-direction special case. For $m<d$, the isotropic term leaves the population eigenvectors unchanged but fills the spectral tail and changes every eigenvalue. Independent additive oracle noise produces further self-product inflation. Cross-fitting removes both effects at the level of the raw population moment because the two sketches have conditionally independent zero-mean errors. The comparison is nevertheless a bias--variance trade-off: the self outer product is positive semidefinite before averaging and can yield lower finite-sample principal-angle error even while converging to the wrong matrix. The trace-adjusted estimator included in the artifact is explicitly treated as a heuristic diagnostic, not as an unbiased estimator.
+## Closed-form correction of the self product {#sec-self-correction}
+
+Under the exact-directional-derivative model, averaging @eq-outer-inflation over anchors gives $\mathbb E[\widehat M_N^{\mathrm{out}}]=\alpha M+\beta\operatorname{tr}(M)I_d$. The identity $\alpha+\beta d=d/m$ gives $\mathbb E[\operatorname{tr}(\widehat M_N^{\mathrm{out}})]=(d/m)\operatorname{tr}(M)$. Thus for $d\geq2$ the raw corrected estimator is
+
+$$
+\widehat M_N^{\mathrm{cal}}
+=\frac{1}{\alpha_{d,m}}\left[
+\widehat M_N^{\mathrm{out}}
+-\frac{d-m}{(d+2)(d-1)}
+\operatorname{tr}(\widehat M_N^{\mathrm{out}})I_d
+\right].
+$$ {#eq-self-correction}
+
+Its expectation is $M$. For $m=d$, including $d=1$, the projection correction is the identity. Because the sample correction subtracts a scalar multiple of the identity and uses a positive scale factor, it retains the eigenvectors and their ordering before optional PSD projection. The same $2mN$ calls therefore give the same fixed-rank eigenspace and a population-calibrated spectrum in this model. Calibrating the population moment leaves sampling variation, and the corrected matrix can have negative sample eigenvalues.
+
+For independent additive errors with known constant variance $\sigma^2$ per function evaluation, the directional-difference error has variance $v=\sigma^2/(2h^2)$. Conditional on $X$ and $Q$, the noise in the sketch has covariance $(d/m)^2vQQ^\top$. Averaging over $Q$ adds $(d/m)vI_d$ to the self-product population target. The inverse in @eq-self-correction maps this term to $vI_d$, so the noisy-oracle baseline subtracts $vI_d$ from $\widehat M_N^{\mathrm{cal}}$. This gives an unbiased estimate of $M$ when centered differences of the noise-free objective are exact directional derivatives, as they are for quadratics. It uses the same function calls when $\sigma^2$ is supplied.
+
+For a general smooth objective at finite $h$, centered differences have a direction-dependent remainder. Under bounded gradients and third derivatives, the additional population error is $O(h^2)$ for fixed $d,m$ after correcting the projection and known homoskedastic noise. The exact identity for $M_h$ in @prp-unbiased remains valid at finite $h$ and only needs conditionally mean-zero noise and independent sketches. When noise variances depend on query location, the self product generally needs a matrix correction determined by those variances. The two calibration identities alone do not order the estimators' finite-sample errors.
+
+The implementation uses `OuterMomentEstimator(calibrate=True, noise_variance=sigma**2, psd_projection=False)` for the raw noisy-oracle baseline and defaults to zero noise variance for noiseless evaluations. Here `directions_per_anchor` is $m$. The implementation applies the correction to the average of unclipped self products.
 
 # Finite-sample theory {#sec-theory}
 
 ## Matrix concentration
 
-The raw terms may be heavy-tailed because finite differences divide noise by $h$. The implementation therefore supports spectral clipping. The next result is stated for naturally bounded sketches. When clipping is used, the same concentration argument applies around the clipped population moment, and the distance to $M_h$ must additionally include the clipping bias. We do not suppress that bias inside the theorem.
+Unbounded observation noise can produce unbounded gradient sketches and matrix cross products. Spectral clipping bounds each cross-product term before averaging. The clipped average concentrates around its own expectation, so a bound relative to $M_h$ must add the difference between that expectation and $M_h$. The following theorem applies to the unclipped estimator when the sketch norms are bounded almost surely.
 
 ::: {#thm-concentration}
 ## Operator-norm concentration
@@ -341,14 +354,14 @@ $$
 where $C>0$ is a universal constant.
 :::
 
-This is a conservative, distribution-free statement. Tighter effective-rank bounds can replace $\log d$ under covariance assumptions [@koltchinskii2017concentration]. The theorem's purpose here is to expose the dependence relevant to discovery: the matrix error must be smaller than the active-subspace eigengap.
+This Bernstein bound uses only the uniform norm bound on the sketches. Its dependence on $N$ matches the Monte Carlo scale of the bounds of Constantine and Gleich [@constantine2014monte]. The constant $G$ can depend on ambient dimension, frame size, finite-difference radius and the noise bound. The eigengap determines how small the matrix error must be for subspace recovery.
 
 ## Eigenspace recovery
 
 ::: {#cor-subspace}
 ## Principal-angle bound
 
-Let $U_{h,r}$ contain the first $r$ eigenvectors of $M_h$, and let $\widehat U_r$ contain the first $r$ eigenvectors of $\widetilde M_N$. If
+Let $U_{h,r}$ contain the first $r$ eigenvectors of $M_h$, let $\widehat U_r$ contain the first $r$ eigenvectors of $\widetilde M_N$, and assume $\Delta_{h,r}=\lambda_r(M_h)-\lambda_{r+1}(M_h)>0$. If
 
 $$
 \Vert\widetilde M_N-M_h\Vert_{\mathrm{op}}\leq\Delta_{h,r}/2,
@@ -367,7 +380,7 @@ The result follows from the Davis--Kahan sin-$\Theta$ theorem [@davis1970rotatio
 
 ## Rank selection
 
-The software uses a scale-normalized eigengap rule because the operator-error radius is unknown in practice. Negative eigenvalues are truncated before selection, candidate gaps are divided by the larger of the following eigenvalue and a small fraction of the leading eigenvalue, and only eigenvalues above a relative floor are considered. The following proposition gives a rigorous benchmark for a threshold rule; it should not be read as a theorem for every data-driven eigengap heuristic.
+The software truncates negative eigenvalues and compares ratios of successive eigenvalues, with a relative floor to avoid dividing by values near zero. The proposition below analyzes a spectral threshold in terms of an operator-norm error bound.
 
 ::: {#prp-rank}
 ## Exact recovery by spectral thresholding
@@ -395,7 +408,7 @@ $$
 In particular, such a threshold exists whenever $2\varepsilon_N<\lambda_r(M_h)$.
 :::
 
-The proposition is intentionally a sufficient condition for a calibrated threshold, not a universal guarantee for an arbitrary spectrum or the implemented normalized eigengap rule. In applications, $\varepsilon_N$ and $\lambda_r(M_h)$ are unknown, which motivates the empirical selector. If several eigenvalues decay gradually, there may be no statistically identifiable single rank; an oracle inequality over candidate dimensions is then more appropriate than exact recovery.
+This guarantee is for the threshold $t_N$. The implemented ratio rule is a heuristic for settings where $\varepsilon_N$ and $\lambda_r(M_h)$ are unknown. Its numerical behavior is reported in @sec-experiments.
 
 # From discovery to optimization {#sec-optimization}
 
@@ -437,7 +450,7 @@ $$
 \left(Y(x_t+\mu Au_t)-Y(x_t-\mu Au_t)\right)Au_t.
 $$
 
-Let $f_{\mu,A}$ be the corresponding subspace-smoothed objective. Assume the projected stochastic gradients have second moment bounded by $V_q(\mu,\sigma)$ and the reduced feasible set has diameter at most $R_A$. Projected stochastic gradient descent with averaged iterate and constant step $\eta$ satisfies
+Let $f_{\mu,A}$ be the average over the radius-$\mu$ ball in $\operatorname{range}(A)$ about each iterate. Assume $f$ is convex and $L$-smooth on the reduced feasible set and its $\mu$-neighborhood in the search space. Assume the projected stochastic gradients have second moment bounded by $V_q(\mu,\sigma)$ and the reduced feasible set has diameter at most $R_A$. Under the assumptions of @thm-transfer, projected stochastic gradient descent with averaged iterate and constant step $\eta$ satisfies
 
 $$
 \mathbb E[f(\bar x_T)-f(x^\star)]
@@ -455,7 +468,7 @@ V_q(\mu,\sigma)
 \lesssim qG^2+q^2L^2\mu^2+\frac{q^2\sigma^2}{\mu^2}.
 $$
 
-Thus the post-discovery stochastic term depends on $q$ rather than $d$. The manuscript experiments use an Adam-stabilized two-point optimizer for numerical robustness; the theorem concerns the basic projected stochastic-gradient version and should not be interpreted as a convergence proof for Adam.
+The stochastic term depends on the dimension $q$ of the restricted search. This bound is for projected stochastic gradient descent. The numerical study uses an Adam-style update for all compared search spaces.
 
 ## Query accounting
 
@@ -465,7 +478,7 @@ $$
 Q_{\mathrm{disc}}=4mN
 $$
 
-function calls. With total budget $Q$, only $Q-Q_{\mathrm{disc}}$ calls remain for optimization. This accounting is enforced by the software. It prevents an unfair comparison in which a structure-aware method receives extra exploratory evaluations.
+function calls. With total budget $Q$, the software leaves $Q-Q_{\mathrm{disc}}$ calls for optimization. A self-product estimator with a single frame uses $2mN$ discovery calls, with or without the correction in @sec-self-correction.
 
 The complete method is summarized in @algo-discover-optimize. The optional PSD projection is applied only after averaging raw cross moments, and rank adaptation is skipped when a target rank is supplied.
 
@@ -520,7 +533,7 @@ trace, A, rank_hat, spectrum = discover_then_optimize(
 
 # A lower bound for discovery {#sec-lower-bound}
 
-The upper bounds might suggest that a better sketch could remove the ambient dimension entirely. The following construction rules that out for general function-value access.
+We study the number of function evaluations needed to identify a direction in a rank-one quadratic family.
 
 For an unknown unit vector $u\in\mathbb S^{d-1}$, consider
 
@@ -529,14 +542,14 @@ f_u(x)=\frac{\lambda}{2}(u^\top x-a)^2,
 \qquad \Vert x\Vert_2\leq1,
 $$
 
-where $0<a<1$. The active subspace is $\mathrm{span}(u)$. A query returns
+where $\lambda>0$ and $0<a<1$. The active subspace is $\mathrm{span}(u)$, for example with the uniform anchor law on the unit ball. A query returns
 
 $$
 Y_t=f_u(x_t)+\xi_t,
 \qquad \xi_t\sim\mathcal N(0,\sigma^2),
 $$
 
-and $x_t$ may depend on all past observations.
+where $\sigma>0$ and $x_t$ may depend on all past observations.
 
 ::: {#thm-lower}
 ## Ambient-dimensional discovery lower bound
@@ -560,20 +573,20 @@ $$
 queries.
 :::
 
-The proof uses a local packing of the sphere and Fano's inequality [@tsybakov2009introduction]. For any query with $\Vert x\Vert\leq1$,
+The proof selects exponentially many candidate directions in a small spherical cap, separated enough that an angle estimate within $\epsilon$ identifies the candidate. For any query with $\Vert x\Vert\leq1$,
 
 $$
 |f_u(x)-f_v(x)|
 \leq\lambda(1+a)\Vert u-v\Vert_2.
 $$
 
-Adaptive chain rules for Kullback--Leibler divergence therefore bound the information accumulated over $N$ observations by a constant times $N\lambda^2(1+a)^2\epsilon^2/\sigma^2$, while the logarithm of a local packing is order $d$. The lower bound is for identifying the direction, not for every possible optimization objective. It establishes the narrower and essential point that the one-time discovery phase generally has an unavoidable ambient-dimensional cost.
+The adaptive chain rule for Kullback--Leibler divergence bounds the information available to distinguish two candidates from $N$ observations. Fano's inequality [@tsybakov2009introduction] requires information proportional to the logarithm of the number of candidates, which grows linearly in $d$. This is a worst-case lower bound for direction estimation within the stated family.
 
 # Reproducible experimental study {#sec-experiments}
 
 ## Design principles
 
-The numerical study is designed to interrogate the mathematical claims rather than to assemble a leaderboard. In particular, matrix calibration, eigenspace recovery, rank selection, and final optimization are evaluated separately. Every optimization comparison uses an exact function-call ledger: exploratory calls used to learn a subspace are deducted from the same total budget available to the full-dimensional baseline. Methods are paired by benchmark instance, shift, noise realization seed, and starting point whenever the experimental design permits.
+The studies measure matrix error, eigenspace error, rank recovery, and final objective gap. We deduct discovery calls from the same total budget available to the full-dimensional optimizer. Optimization runs are paired by problem instance and starting point, with separate noise streams for each method.
 
 The manuscript reports only the configuration in `configs/verified.yaml`. It contains four studies summarized in @tbl-design. The raw files contain one row per repetition, method, and setting; no values have been copied from plotted images. The figure-generation program reads those rows, and the summary files record means with standard errors or medians with interquartile ranges as appropriate.
 
@@ -599,60 +612,62 @@ f_\tau(x)=\phi\!\left(U_\star^\top(x-s)\right)
 +\frac{\tau}{2}\left\|(I-U_\star U_\star^\top)(x-s)\right\|_2^2.
 $$ {#eq-embedded-benchmark}
 
-The construction is deliberately more controlled than a full COCO campaign: the true subspace and optimum are known, making principal-angle error and normalized regret observable. It is not represented as an official BBOB performance submission because the standard COCO instance transformations and target-based post-processing are not used. The repository includes an optional adapter for users who wish to extend the study to the official suite.
+The embedding gives a known reference subspace and optimum, so we can measure principal-angle error and final regret. The study uses the analytical formulas with the embedding above. The optional COCO adapter provides access to official benchmark instances and transformations.
 
 All static problem instances used in the verified run are stored under `datasets/generated_inputs/` as NumPy archives. The seed ledger records the generator state for every repetition. Random directions are regenerated from those seeds rather than stored as large arrays. This design makes the benchmark data public, compact, and exactly reproducible.
 
 ## Competing estimators and optimizers
 
-The moment study compares three equal-query estimators.
+The recorded moment study uses noiseless function evaluations and compares three estimators with equal per-anchor query costs.
 
 1. **Cross-fitted moment:** two independent four-direction orthogonal batches, for $4\times4=16$ calls per anchor.
 2. **Self outer product:** one eight-direction batch, for $2\times8=16$ calls per anchor.
-3. **Trace-adjusted self outer product:** the same self product followed by the heuristic trace subtraction implemented in `OuterMomentEstimator(debias_trace=True)`.
+3. **Historical trace heuristic:** an eight-direction self product $S$ followed by $S-\operatorname{tr}(S)I_d/[d(d+2)]$. The code retains `OuterMomentEstimator(debias_trace=True)` to reproduce the archived study.
 
-The optimization study includes an oracle subspace, the cross-fitted estimator with known rank, the same estimator with data-driven rank, a sparse-sketch variant, a random rank-$r$ subspace, and a full-dimensional two-point optimizer. All non-oracle algorithms observe only noisy function values. The numerical optimizer uses projected Adam-style moments because this was more stable across the four function families. As emphasized after @thm-transfer, the theorem is for projected stochastic two-point gradient descent and does not constitute an Adam convergence result.
+The three estimates in the recorded study use PSD projection. The implemented closed-form baseline in @sec-self-correction is available for separate use. The recorded numerical results concern the three methods above.
 
-## Moment calibration: the estimand matters
+The optimization study includes the true subspace, cross-fitting with known or estimated rank, a sparse-sketch variant of cross-fitting, a random rank-$r$ subspace, and full-dimensional updates. Every method receives noisy function values during optimization. The true-subspace method is additionally given the reference subspace. All methods use the same Adam-style two-point update with probes and iterates clipped to the box. At the boundary, coordinate-wise clipping can move a point outside the chosen affine space, so the theoretical restricted search and the numerical update have different feasibility rules.
 
-@fig-calibration compares matrix and eigenspace errors as the anchor count increases. The cross-fitted operator error decreases from $0.480$ (SE $0.039$) at $N=80$ to $0.051$ (SE $0.003$) at $N=5120$. The self outer product initially has lower operator error, but it levels off at $0.119$; the trace-adjusted variant reaches $0.102$. This is the qualitative behavior predicted by @prp-inflation; sampling variation decays, whereas population inflation remains.
+## Matrix and eigenspace errors on a quadratic ridge
 
-The right panel gives the complementary result. At every tested $N$, the self-product variants have smaller principal-angle error than cross-fitting. At $N=5120$, the errors are $0.047$ for cross-fitting, $0.024$ for the self outer product, and $0.023$ after trace adjustment. Hence a method can estimate the eigenspace well while estimating the moment matrix poorly. Reporting only principal angles would conceal the calibration failure; reporting only operator error would conceal the finite-sample variance advantage. The endpoint estimates and their standard errors are collected in @tbl-calibration.
+@fig-calibration compares matrix and eigenspace errors as the anchor count increases. The cross-fitted operator error decreases from $0.480$ (SE $0.039$) at $N=80$ to $0.051$ (SE $0.003$) at $N=5120$. At $N=5120$, the uncorrected self product and the historical trace heuristic have mean operator errors of $0.119$ and $0.102$. The persistent error of the uncorrected self product is consistent with its population bias in @prp-inflation.
 
-![Moment calibration under an equal per-anchor query count. Lines are means across 20 repetitions; shaded bands are plus or minus one standard error.](figures/manuscript/fig02_calibration.png){#fig-calibration width=100%}
+Both recorded self-product variants have lower mean principal-angle error than cross-fitting at every tested $N$. At $N=5120$, those errors are $0.024$ for the self outer product, $0.023$ for the historical trace heuristic, and $0.047$ for cross-fitting. The comparison is specific to this quadratic design. @tbl-calibration gives the endpoint estimates and their standard errors.
+
+![Matrix and eigenspace errors with 16 calls per anchor. Lines are means across 20 repetitions, and shaded bands show one standard error on either side. “Trace-corrected outer” in the archived legend denotes the historical trace heuristic.](figures/manuscript/fig02_calibration.png){#fig-calibration width=100%}
 
 | Estimator | Anchors | Operator error | Operator SE | Subspace error | Subspace SE |
 |---|---:|---:|---:|---:|---:|
 | Cross-fitted | 80 | 0.4797 | 0.0394 | 0.4405 | 0.0310 |
-| Cross-fitted | 5120 | 0.0514 | 0.0030 | 0.0468 | 0.0019 |
+| Cross-fitted | 5120 | **0.0514** | 0.0030 | 0.0468 | 0.0019 |
 | Self outer product | 80 | 0.3247 | 0.0370 | 0.2177 | 0.0136 |
 | Self outer product | 5120 | 0.1186 | 0.0050 | 0.0237 | 0.0013 |
-| Trace-corrected outer | 80 | 0.3180 | 0.0369 | 0.2083 | 0.0095 |
-| Trace-corrected outer | 5120 | 0.1023 | 0.0047 | 0.0225 | 0.0009 |
+| Historical trace heuristic | 80 | **0.3180** | 0.0369 | **0.2083** | 0.0095 |
+| Historical trace heuristic | 5120 | 0.1023 | 0.0047 | **0.0225** | 0.0009 |
 
-: Endpoints of the moment-calibration experiment. Errors are means and SE denotes the standard error across 20 repetitions. {#tbl-calibration}
+: Endpoints of the noiseless quadratic study. Bold values mark the lowest mean error for each anchor count and metric. SE denotes the standard error across 20 repetitions. {#tbl-calibration}
 
 ## Dimension scaling and adaptive rank
 
-The second study keeps the anchor count proportional to $d$. Panel (a) of @fig-scaling shows that principal-angle error nevertheless increases with ambient dimension, which is consistent with the discovery lower bound and with the fact that a fixed proportional budget does not hold every concentration constant. Known-rank and adaptive estimates coincide except at $(d,r)=(40,2)$, where one of ten runs underestimates the rank. The adaptive selector therefore achieves 100% exact recovery in five of six settings and 90% in the remaining setting; this is evidence under a strong-gap design, not a universal guarantee.
+The second study uses $N=20d$ anchors at each of three dimensions. In panel (a) of @fig-scaling, mean principal-angle error increases with $d$. Known-rank and adaptive estimates coincide except at $(d,r)=(40,2)$, where one of ten runs underestimates the rank. The adaptive rule thus recovers the exact rank in all ten runs for five settings and in nine runs for the remaining setting. These measurements describe rank recovery for the tested strong-gap quadratics.
 
 ![Dimension scaling of cross-fitted discovery. (a) Mean principal-angle error with one-standard-error bars. Solid lines use the true rank and dashed lines use the eigengap selector. (b) Exact rank-recovery rate of the adaptive estimator.](figures/manuscript/fig03_dimension_scaling.png){#fig-scaling width=100%}
 
-## Single-task optimization under an honest query budget
+## Single-task optimization with a fixed query budget
 
-@fig-exact-regret and @fig-approx-regret show all ten paired final regrets. Regret is normalized within each benchmark instance and plotted on a base-ten logarithmic scale. The distributional presentation is important: with only ten repetitions, means can be dominated by a failed multimodal run, while medians alone can hide bimodality.
+@fig-exact-regret and @fig-approx-regret show all ten paired final regrets. For the point with the lowest observed noisy value, we report its noiseless objective minus the known optimum value. The figures plot this gap on a base-ten logarithmic scale. Each run uses 3,999 of its 4,000 allowed oracle calls, because the optimizer evaluates the initial point once and then queries in pairs. The noiseless gap is computed separately for reporting.
 
 For exact ridge objectives, the oracle subspace gives the best median Sphere regret ($1.89\times10^{-3}$), and the sparse cross variant is close ($2.23\times10^{-3}$). On Ellipsoid and Rosenbrock, however, full-dimensional ZO has the smallest median regret among feasible methods: $0.196$ and $0.0258$, respectively. The known-rank cross method spends 720 of 4000 calls on discovery, leaving fewer update steps; its corresponding medians are $0.359$ and $0.0596$. These results show that an accurate subspace need not repay its acquisition cost on one task.
 
-Rastrigin gives a stronger negative control. Even the oracle-subspace median is about $1.01$, compared with $0.507$ for full ZO. Restricting a local optimizer to the true ridge does not solve multimodality; an ambient trajectory can occasionally reach a better basin. This is why the article does not state that low effective dimension is sufficient for faster global optimization.
+On Rastrigin, the true-subspace and full-dimensional median regrets are $1.01$ and $0.507$, respectively.
 
-![Final normalized regret for exact ridge objectives. Boxes show the interquartile range, whiskers the 5th and 95th percentiles, points all repetitions, and dotted blue lines the full-dimensional median within each benchmark.](figures/manuscript/fig04_exact_regret.png){#fig-exact-regret width=100%}
+![Final objective gap for exact ridge objectives, labeled “normalized regret” on the archived axis. Boxes show the interquartile range, whiskers the 5th and 95th percentiles, points all repetitions, and dotted blue lines the full-dimensional median within each benchmark.](figures/manuscript/fig04_exact_regret.png){#fig-exact-regret width=100%}
 
-When $\tau=0.02$, leaving the estimated subspace can reduce the approximation floor, so full-dimensional updates become more competitive. The known-rank cross method is nevertheless favorable in median on the approximate Ellipsoid ($0.0938$ versus $0.150$ for full ZO) and Sphere ($0.0364$ versus $0.0481$). On Rosenbrock, the full and oracle methods remain strongest; on Rastrigin, full ZO and the oracle subspace have medians near $0.05$, while learned and random subspaces are much worse.
+At $\tau=0.02$, the known-rank cross method has lower median regret than full ZO on Ellipsoid ($0.0938$ versus $0.150$) and Sphere ($0.0364$ versus $0.0481$). @fig-approx-regret gives the corresponding results for Rosenbrock and Rastrigin.
 
-![Final normalized regret for approximate ridge objectives with $\tau=0.02$. Plotting conventions match @fig-exact-regret.](figures/manuscript/fig05_approx_regret.png){#fig-approx-regret width=100%}
+![Final objective gap for approximate ridge objectives with $\tau=0.02$. Plotting conventions match @fig-exact-regret.](figures/manuscript/fig05_approx_regret.png){#fig-approx-regret width=100%}
 
-To preserve pairing, the primary inferential summary is the mean within-instance difference in $\log_{10}$ regret relative to full ZO, with a percentile bootstrap interval from 20,000 paired resamples. Negative values favor the subspace method. @fig-paired makes the uncertainty visible. Most intervals cross zero. Clear losses include adaptive cross on exact Ellipsoid, learned subspaces on several Rosenbrock settings, and all non-oracle restricted methods on approximate Rastrigin. The figure should therefore be read as a map of where the current pipeline fails as much as where it succeeds.
+Our paired summary is the mean within-instance difference in $\log_{10}$ regret relative to full ZO. Negative values favor the subspace method. The 20,000 bootstrap resamples approximate percentile endpoints using the same ten independent run pairs per setting. The effective sample size remains ten, so the intervals can be sensitive to individual pairs. Most intervals in @fig-paired cross zero.
 
 ![Paired comparison with full-dimensional ZO. Points are mean differences in $\log_{10}$ regret and bars are 95% paired-bootstrap intervals from 20,000 resamples. Negative values favor the method named on the row.](figures/manuscript/fig06_paired_forest.png){#fig-paired width=100%}
 
@@ -660,7 +675,7 @@ To preserve pairing, the primary inferential summary is the mean within-instance
 
 The final study holds a rank-two subspace fixed across five shifted ellipsoid tasks and pays the 720-call discovery cost once. A full-dimensional baseline receives exactly the same total number of calls as the reused cross method. Panel (a) of @fig-amortization shows median mean regret with interquartile bands. At one task, reuse has median regret $0.373$ versus $0.287$ for equal-budget full ZO. At three and five tasks, the corresponding medians are $0.292$ versus $0.432$ and $0.378$ versus $0.454$.
 
-The paired log-regret differences in panel (b) of @fig-amortization move from positive at one task to negative at three and five tasks, which is the expected amortization direction. However, all three 95% intervals include zero. The correct conclusion is therefore not statistical dominance, but compatibility with the proposed cost model and evidence that reuse can compensate for discovery in some instances. Larger paired experiments are needed for a precise crossover estimate. The paired summaries are reported in @tbl-amortization.
+In panel (b) of @fig-amortization, the paired log-regret difference is positive at one task and negative at three and five tasks. All three bootstrap intervals include zero. The observed pattern is consistent with spreading the discovery cost across related tasks, with substantial uncertainty about where reuse pays off. @tbl-amortization gives the paired summaries.
 
 ![Amortization across related objectives. (a) Median of the task-averaged regret with interquartile bands. (b) Paired mean log-regret difference between reused cross discovery and equal-total-budget full ZO; bars are 95% bootstrap intervals.](figures/manuscript/fig07_amortization.png){#fig-amortization width=100%}
 
@@ -694,39 +709,21 @@ The verified experiment can be rerun with `python scripts/run_verified.py`; it i
 
 # Discussion {#sec-discussion}
 
-## What the theory and experiments jointly show
+## Estimating the matrix and its leading subspace
 
-The central conceptual separation is between *discovering* a useful representation and *optimizing* after that representation is available. The lower bound says the first stage cannot generally avoid ambient dimension. The transfer theorem says the second stage can depend on intrinsic dimension, but only after the projector error is small enough. Query accounting then determines whether the investment pays back.
+Under the linear directional model, the self product's bias is reversible and its leading eigenspaces survive the correction. With homoskedastic observation noise, the correction uses the noise variance. Cross-fitting identifies $M_h$ for general smooth objectives at finite $h$ and allows the noise variance to vary with query location. Its additional requirement is a second independent sketch at each anchor. For fixed query budgets, comparing estimators requires accounting for the number of directions and anchors as well as the matrix and eigenspace losses.
 
-Cross-fitting is valuable when estimating the moment matrix itself is scientifically meaningful, when rank selection depends on a calibrated spectral tail, or when the subspace is reused. It is not uniformly variance-optimal. For a fixed query count and a strong eigengap, a conventional self outer product may estimate eigenvectors more accurately. A good practical workflow should therefore inspect both matrix calibration and subspace stability rather than choose an estimator by doctrine.
+In the recorded quadratic study, the uncorrected self product has a smaller mean principal-angle error than cross-fitting, and its operator error remains above the cross-fitted error at the largest tested anchor count. These observations compare the recorded estimators. The exact correction gives a calibrated alternative under this quadratic model, with the fixed-rank eigenspace of the uncorrected self product before PSD projection.
 
-The optimization results also prevent a common overclaim. Low effective dimension does not imply that local zeroth-order optimization becomes easy. Conditioning, curvature, multimodality, and the position of the starting point remain decisive. On Rastrigin, the oracle subspace itself can be worse than an ambient search using the same local optimizer. A structural estimator should be combined with an appropriate global-search method if multimodality is central.
+The transfer bound relates principal-angle error to the loss from searching in an estimated subspace. In the numerical study, the same two-point update can benefit from a lower-dimensional search, but each discovery call reduces the calls available for those updates. The observed benefit of reuse varies across the ten paired runs.
 
 ## Limitations
 
-The current work has several explicit limits.
+The concentration bound uses an almost-sure norm bound on the raw sketches. Under unbounded noise, clipping allows a bounded concentration argument with an additional bias term. The self-product correction is exact for the linear directional model, and its noisy version needs a supplied noise variance. Estimating that variance from extra evaluations would change the total query cost.
 
-- The finite-sample concentration theorem assumes bounded or clipped gradient sketches. Sharper sub-exponential and robust median-of-means analyses are not developed here.
-- Proposition 2 treats one orthogonal batch exactly, but does not derive an optimal mean-squared-error shrinkage between cross and self moments.
-- The rank selector is justified under a clear spectral gap. Gradually decaying spectra require model averaging or oracle inequalities rather than exact rank claims.
-- The optimization theorem covers the basic projected stochastic-gradient method. The numerical Adam stabilization is an engineering choice and has no theorem in this manuscript.
-- The lower bound covers rank-one direction estimation in a Gaussian oracle family. It does not prove a universal direct-sum lower bound for discovery plus every optimization class.
-- The verified optimization study has ten paired repetitions per setting. The repository includes a higher-power configuration, but its results are not used in the manuscript because they were not executed in the present validation environment.
-- The default benchmark uses canonical BBOB formulas rather than the full official COCO instance transformations. The optional adapter makes that extension possible in a compatible environment.
+The rank guarantee concerns a spectral threshold for an exact-rank target. The implemented eigenvalue-ratio rule is evaluated in the recorded strong-gap settings. The optimization analysis covers a convex restricted problem and a projected stochastic-gradient update. The BBOB-formula study also includes nonconvex objectives and uses an Adam-style update. Its ten independent pairs per setting limit the precision of the method comparisons.
 
-## Future work
-
-Three extensions follow directly from the observed behavior. First, a shrinkage estimator
-
-$$
-\widehat M_\alpha
-=\alpha\widehat M_{\mathrm{cross}}
-+(1-\alpha)\widehat M_{\mathrm{outer,corrected}}
-$$
-
-could trade calibration for finite-sample eigenspace variance, with $\alpha$ selected by held-out cross moments. Second, sequential discovery could stop once the current projector uncertainty is below the predicted optimization benefit, replacing a fixed discovery budget. Third, related-task settings call for online subspace tracking and tests for when the shared-subspace assumption has broken.
-
-# Software and artifact organization {#sec-software}
+# Software and reproducibility package {#sec-software}
 
 The package is intentionally small enough to audit.
 
@@ -734,7 +731,7 @@ The package is intentionally small enough to audit.
 src/discoverzo/
   benchmarks.py    public benchmark formulas and optional COCO adapter
   oracles.py       noisy function-value oracle and query ledger
-  subspace.py      sketches, cross moments, PSD projection, rank selection
+  subspace.py      sketches, cross moments, calibrated self moments, rank selection
   optimizers.py    full and restricted two-point optimizers
   experiments.py   deterministic experiment definitions
 scripts/
@@ -754,9 +751,9 @@ The repository includes unit tests for benchmark optima, query counts, moment es
 
 # Conclusion {#sec-conclusion}
 
-Unknown low-dimensional structure does not make ambient dimension disappear. It changes where dimension is paid. Cross-fitted finite-difference sketches provide a calibrated way to estimate the active-subspace moment from function values, and matrix concentration plus eigenspace perturbation quantify the resulting discovery error. Once a sufficiently accurate subspace is available, projected two-point optimization pays an intrinsic-dimensional stochastic cost plus a transparent approximation floor. A Gaussian-oracle lower bound confirms that the discovery stage itself must scale with ambient dimension in general.
+Cross-fitting estimates the ball-smoothed gradient second moment using two independent finite-difference sketches per anchor. The closed-form self-product correction estimates the gradient second moment from one sketch under the linear directional model, with an explicit adjustment for independent homoskedastic noise of known variance. The choice between these estimators depends on the oracle assumptions and the finite-sample error at the available query budget.
 
-The reproducible study adds an equally important qualification. The self outer product can be the better finite-sample eigenspace estimator; a single task may not repay the discovery budget; and multimodality can defeat even an oracle subspace. Structure discovery is most compelling when spectral calibration matters, when the learned geometry is reused, or when the downstream objective is sufficiently regular. The complete artifact is designed to make these conclusions inspectable rather than merely asserted.
+The rank-one lower bound demonstrates an ambient-dimensional cost of learning the subspace in the noisy setting studied here. In restricted convex optimization, the subsequent stochastic cost can scale with the search dimension and the approximation error is controlled by the quality of the learned subspace. These two effects determine whether the smaller search space is worth the discovery calls.
 
 
 # Computational environment {#sec-environment}
@@ -776,7 +773,7 @@ for package in [numpy, scipy, pandas, matplotlib, yaml]:
 
 # Appendix A: Proofs {#sec-proofs}
 
-## Proof of Proposition 1
+## Proof of conditional cross-moment calibration
 
 For one column $q$ of a random orthogonal frame, rotational invariance makes $q$ uniform on $\mathbb S^{d-1}$. By exchangeability of the $m$ columns,
 
@@ -787,7 +784,7 @@ $$
 =d\,\mathbb E[\delta_hY(x;U)U].
 $$
 
-The noise contribution has conditional mean zero. The spherical divergence identity for uniform-ball smoothing gives the first equality in Proposition 1. Conditional on $X=x$, the two frames and all oracle noises are independent, so
+The noise contribution has conditional mean zero. The spherical divergence identity for uniform-ball smoothing gives the mean in @prp-unbiased. Conditional on $X=x$, the two sketches are independent, so
 
 $$
 \mathbb E[\widehat g_Q\widehat g_R^\top\mid X=x]
@@ -798,9 +795,9 @@ $$
 
 The transpose term has the same expectation. Averaging over $X$ completes the proof. For a quadratic, the cubic remainder in a centered finite difference is zero, hence $\delta_hf(x;u)=u^\top\nabla f(x)$ exactly.
 
-## Proof of Proposition 2
+## Proof of the orthogonal-batch self-product identity
 
-By rotational equivariance, it is enough to take $\Vert g\Vert_2=1$ and $g=e_1$. The random matrix $P=QQ^\top$ is a rank-$m$ orthogonal projector with Haar-distributed range. Rotational symmetry around $e_1$ implies
+For $m=d$ the projector is the identity. For $1\leq m<d$ and $g\neq0$, rotational equivariance and homogeneity let us take $g=e_1$. The random matrix $P=QQ^\top$ is a rank-$m$ orthogonal projector with Haar-distributed range. Rotational symmetry around $e_1$ implies
 
 $$
 \mathbb E[Pe_1e_1^\top P]
@@ -843,9 +840,9 @@ $$
 =\frac{d\{d(m+1)-2\}}{m(d+2)(d-1)}.
 $$
 
-Homogeneity restores an arbitrary $\Vert g\Vert_2$. The endpoint cases follow by substitution.
+Multiplying by $\Vert g\Vert_2^2$ and rotating back gives the formula for any $g$. The case $g=0$ is immediate.
 
-## Proof of Theorem 1
+## Proof of operator-norm concentration
 
 Let $X_i=Z_i-\mathbb E Z_i$. Each $X_i$ is self-adjoint and mean zero. Since
 
@@ -874,7 +871,7 @@ $$
 
 Absorbing numerical factors into $C$ yields the statement.
 
-## Proof of Corollary 1
+## Proof of the principal-angle bound
 
 The result is a direct application of the Davis--Kahan theorem to $M_h$ and $\widetilde M_N$. Under the assumed perturbation, the leading and trailing empirical spectral clusters remain separated. The standard operator-norm sin-$\Theta$ bound gives
 
@@ -887,7 +884,7 @@ $$
 \frac{2\Vert\widetilde M_N-M_h\Vert_{\mathrm{op}}}{\Delta_{h,r}}.
 $$
 
-## Proof of Proposition 3
+## Proof of rank recovery by spectral thresholding
 
 Write $\widehat\lambda_1\geq\cdots\geq\widehat\lambda_d$ for the eigenvalues of $\widetilde M_N$. Weyl's inequality gives
 
@@ -913,7 +910,7 @@ $$
 
 Exactly the first $r$ empirical eigenvalues exceed $t_N$, proving $\widehat r(t_N)=r$. The interval for $t_N$ is nonempty precisely when $2\varepsilon_N<\lambda_r(M_h)$.
 
-## Proof of Theorem 2
+## Proof of the subspace approximation floor
 
 Let $P_A=AA^\top$ and define the feasible projected representative
 
@@ -957,11 +954,11 @@ $$
 +\eta^2V_q.
 $$
 
-Sum over $t$, divide by $2\eta T$, apply convexity to the averaged iterate, and use the smoothing bound $|f_{\mu,A}-f|\leq L\mu^2/2$. Theorem 2 supplies the final approximation term.
+Sum over $t$, divide by $2\eta T$, and apply convexity to the averaged iterate. Jensen's inequality and smoothness give $0\leq f_{\mu,A}-f\leq L\mu^2/2$ on the reduced feasible set. @thm-transfer supplies the remaining approximation term.
 
-## Proof of Theorem 3
+## Proof of the discovery lower bound
 
-Choose a local packing $u_1,\ldots,u_M$ of a spherical cap with pairwise Euclidean distances between $c_1\epsilon$ and $c_2\epsilon$ and $\log M\geq c_3d$. Such packings follow from standard sphere-volume arguments.
+Choose $K$ directions in a spherical cap of radius $O(\epsilon)$ with pairwise projector distances $\Vert u_i u_i^\top-u_j u_j^\top\Vert_{\mathrm{op}}>2\epsilon$ and $\log K\geq c_3d$. A volume packing in the $(d-1)$-dimensional tangent ball gives such a set for small enough $\epsilon$. The pairwise Euclidean distances are at most $c_2\epsilon$.
 
 For any $\Vert x\Vert\leq1$,
 
@@ -983,7 +980,7 @@ D_{\mathrm{KL}}(P_u^N\Vert P_v^N)
 C N\frac{\lambda^2(1+a)^2\epsilon^2}{\sigma^2}.
 $$
 
-Fano's inequality implies an error probability bounded away from zero unless the right-hand side is at least a constant fraction of $\log M\geq c_3d$. Rearrangement gives the stated lower bound. Because a small principal-angle estimator would identify the packing element, the testing lower bound transfers to subspace estimation.
+By the separation in projector distance, an estimate within $\epsilon$ identifies the candidate by nearest-projector decoding. Fano's inequality gives a decoding error greater than $1/3$ for sufficiently large $d$ if the KL bound is smaller than a suitable constant fraction of $\log K$. Rearranging gives the stated query lower bound.
 
 # Appendix B: Exact verified configuration
 
@@ -1000,3 +997,12 @@ noise_std: 0.02
 ```
 
 The optimization runs are split into five deterministic batches of two repetitions. Batch $b$ uses seed `12345 + 1_000_000*b`, and the combined row identifier is `rep_global = rep + 2*b`. This batching is part of `scripts/run_verified.py`, so the cached results can be regenerated exactly rather than approximately.
+
+# Use of generative AI {.unnumbered}
+
+During revision, OpenAI Codex assisted with checking the algebra and references and helped draft revisions to the manuscript and the code for the self-product correction. Its use therefore shaped parts of the text and implementation. The author is responsible for the manuscript and code.
+
+# References {.unnumbered}
+
+::: {#refs}
+:::

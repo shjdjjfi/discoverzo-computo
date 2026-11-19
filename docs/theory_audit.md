@@ -15,10 +15,13 @@
 
 ## Self-product population formula
 
-- Proposition 2 covers an arbitrary Haar orthogonal batch of size `m`, matching the implementation.
+- The self-product identity covers one Haar orthogonal batch with `1 <= m <= d` and exact directional derivatives.
 - The coefficients reduce to the spherical one-direction identity at `m=1` and to the exact gradient outer product at `m=d`.
 - A deterministic Monte Carlo unit test checks the formula at an intermediate `(d,m)`.
-- The trace-adjusted baseline remains a heuristic and is never described as unbiased.
+- The raw closed-form correction subtracts the trace term and divides by the anisotropic coefficient. It preserves the ordering and eigenvectors of the uncorrected sample matrix.
+- For independent homoskedastic function-value noise of known variance `sigma2`, the inverse map leaves the isotropic term `sigma2 / (2*h**2)` on the diagonal. The noisy calibration subtracts this term.
+- Centered differences satisfy the exact directional model for quadratics. For general smooth functions at nonzero radius, the directional approximation adds a remainder.
+- Use `OuterMomentEstimator(calibrate=True, noise_variance=sigma2, psd_projection=False)` for the raw corrected baseline. The recorded moment study used the earlier trace heuristic, which is still available with `debias_trace=True`.
 
 ## Concentration theorem
 

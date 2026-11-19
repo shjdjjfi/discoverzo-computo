@@ -5,7 +5,7 @@ from typing import Callable, Optional
 
 import numpy as np
 
-from .subspace import CrossMomentEstimator, estimate_active_subspace, sample_unit_sphere
+from .subspace import CrossMomentEstimator, OuterMomentEstimator, estimate_active_subspace, sample_unit_sphere
 
 Array = np.ndarray
 
@@ -110,7 +110,7 @@ def discover_then_optimize(
     rng: np.random.Generator,
     rank: Optional[int] = None,
     max_rank: Optional[int] = None,
-    estimator: Optional[CrossMomentEstimator] = None,
+    estimator: Optional[CrossMomentEstimator | OuterMomentEstimator] = None,
     optimizer: Optional[TwoPointOptimizer] = None,
     x0: Optional[Array] = None,
 ) -> tuple[OptimizationTrace, Array, int, Array]:

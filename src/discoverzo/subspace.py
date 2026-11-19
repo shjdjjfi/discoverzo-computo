@@ -94,8 +94,8 @@ class CrossMomentEstimator:
 
     For each anchor x, two independent two-point gradient proxies g and h are
     computed and the symmetric cross product (gh^T + hg^T)/2 is averaged.
-    Conditional independence removes the isotropic second-moment inflation
-    of the usual outer-product estimator.
+    Conditional independence makes the raw moment target the outer product
+    of the mean sketch at each anchor.
     """
 
     h: float = 1e-2
@@ -139,7 +139,15 @@ class CrossMomentEstimator:
 
 @dataclass
 class OuterMomentEstimator:
-    """Conventional outer-product estimator used as a diagnostic baseline."""
+    """Self outer products with optional closed-form population calibration.
+
+    With calibrate=True, use one orthogonal frame per anchor and invert its
+    exact second-moment map for linear directional data. Quadratic objectives
+    give such data via centered differences. noise_variance is the variance
+    of each scalar oracle observation under independent homoskedastic noise.
+    Set psd_projection=False to obtain the raw calibrated estimate.
+    debias_trace reproduces the historical heuristic.
+    """
 
     h: float = 1e-2
     anchor_radius: float = 1.0
@@ -147,6 +155,8 @@ class OuterMomentEstimator:
     debias_trace: bool = False
     psd_projection: bool = True
     directions_per_anchor: int = 8
+    calibrate: bool = False
+    noise_variance: float = 0.0
 
     def estimate(
         self,
@@ -156,23 +166,47 @@ class OuterMomentEstimator:
         rng: np.random.Generator,
         anchors: Optional[Array] = None,
     ) -> MomentEstimate:
+        m = self.directions_per_anchor
+        if self.h <= 0:
+            raise ValueError("h must be positive")
+        if d < 1 or m < 1 or n_anchors < 1:
+            raise ValueError("d, directions_per_anchor and n_anchors must be positive")
+        if not np.isfinite(self.noise_variance) or self.noise_variance < 0:
+            raise ValueError("noise_variance must be finite and nonnegative")
+        if self.noise_variance and not self.calibrate:
+            raise ValueError("noise_variance requires calibrate=True")
+        if self.calibrate and (m > d or self.debias_trace or self.clip is not None):
+            raise ValueError("calibrate=True requires one orthogonal frame, no clipping, and debias_trace=False")
         if anchors is None:
             anchors = rng.uniform(-self.anchor_radius, self.anchor_radius, size=(n_anchors, d))
         anchors = np.asarray(anchors, dtype=float)
+        if anchors.shape != (n_anchors, d):
+            raise ValueError("anchors have incompatible shape")
         acc = np.zeros((d, d), dtype=float)
         for x in anchors:
-            dirs = sample_orthonormal_directions(d, self.directions_per_anchor, rng)
+            dirs = sample_orthonormal_directions(d, m, rng)
             g = batched_directional_gradient(oracle, x, dirs, self.h)
             acc += spectral_clip(np.outer(g, g), self.clip)
         matrix = symmetrize(acc / n_anchors)
+        if self.calibrate:
+            diagonal = np.diag_indices(d)
+            if m < d:
+                denominator = (d + 2) * (d - 1)
+                alpha = d * (d * (m + 1) - 2) / (m * denominator)
+                matrix[diagonal] -= ((d - m) / denominator) * np.trace(matrix)
+                matrix /= alpha
+            # The inverse map sends the isotropic sketch-noise term to the
+            # variance of a single centered directional difference times I.
+            if self.noise_variance:
+                matrix[diagonal] -= self.noise_variance / (2.0 * self.h**2)
         if self.debias_trace:
-            # Heuristic isotropic correction; retained as a transparent baseline.
+            # Historical heuristic used in the archived moment study.
             matrix -= np.trace(matrix) / (d * (d + 2.0)) * np.eye(d)
         if self.psd_projection:
             matrix = project_psd(matrix)
         values, vectors = np.linalg.eigh(matrix)
         order = np.argsort(values)[::-1]
-        return MomentEstimate(matrix, values[order], vectors[:, order], anchors, 2 * self.directions_per_anchor * n_anchors)
+        return MomentEstimate(matrix, values[order], vectors[:, order], anchors, 2 * m * n_anchors)
 
 
 def select_rank_eigengap(

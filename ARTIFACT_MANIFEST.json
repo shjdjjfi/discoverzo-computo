@@ -1,31 +1,31 @@
 {
   "artifact": "discoverzo-computo-submission",
-  "generated": "2026-07-18",
+  "generated": "2026-11-19",
   "file_count": 149,
-  "total_size_bytes": 19300197,
+  "total_size_bytes": 19293886,
   "files": [
     {
-      "path": ".github/workflows/build.yml",
-      "size_bytes": 491,
-      "sha256": "f4c5b80630b23fa3878ef2acdb06b084d27b5bbbadb0afff626915e00ddd936e",
+      "path": ".github/ISSUE_TEMPLATE/production.md",
+      "size_bytes": 2963,
+      "sha256": "df8f0b6e3a643c5f8f3fca3fba98a44553107204d9fbf9858d7c9db7601d9e68",
       "executable": false
     },
     {
-      "path": ".github/workflows/validation.yml",
-      "size_bytes": 590,
-      "sha256": "be4972b2f33e6a4a15cc72b7ac5e7b5c97346f6e33208725a748e75d745695db",
+      "path": ".github/workflows/build.yml",
+      "size_bytes": 530,
+      "sha256": "a20ac9c3e7c496024cd74659b7c4d942b1f418a99a8b72fea5e118a6815989bf",
       "executable": false
     },
     {
       "path": ".gitignore",
-      "size_bytes": 109,
-      "sha256": "762f0272060e14b80081240b62c17b27dcde12587ade8fccf938862ff3491063",
+      "size_bytes": 508,
+      "sha256": "ced5495c7ed6b26ab3b46a6eec8214bee872d023f2b3a36ba3777589462eced3",
       "executable": false
     },
     {
       "path": "AUTHOR_METADATA.md",
-      "size_bytes": 534,
-      "sha256": "2f212ea2a2c0cbba631b82ded7422601b20a64342633400ec876935417f7fac5",
+      "size_bytes": 535,
+      "sha256": "a454cf5cc7a0b3b8ef64eda03aba465400e2a5f1c4b6216544c643d06d067ad8",
       "executable": false
     },
     {
@@ -72,8 +72,8 @@
     },
     {
       "path": "_quarto.yml",
-      "size_bytes": 1082,
-      "sha256": "e72cabc487c23e9c6ea47a6654641ff3f206ac4ccf0c944cad482cf86e2bf498",
+      "size_bytes": 1214,
+      "sha256": "3e8576060122548a5fd3a4232d92486715d2bb1b3a19c49dfe1f3fcb5ce09075",
       "executable": false
     },
     {
@@ -234,8 +234,8 @@
     },
     {
       "path": "docs/theory_audit.md",
-      "size_bytes": 3004,
-      "sha256": "d689609bfa342d3bb14906bb6c4732a63b5f8d7cabfb46b69a72d5993720573e",
+      "size_bytes": 3719,
+      "sha256": "ec99cd1897e117abf3fe952a711e63d391a9db1f1001af5a74e2416742b427a4",
       "executable": false
     },
     {
@@ -246,8 +246,8 @@
     },
     {
       "path": "environment.yml",
-      "size_bytes": 216,
-      "sha256": "7ad264f03f79c599c9b9d8af93089c64809eeffdeb969d14010149120af27fc3",
+      "size_bytes": 270,
+      "sha256": "9b8b3172765dd5f9efa5d0f461278b16703816b4665fda1541799898c5e1213b",
       "executable": false
     },
     {
@@ -348,20 +348,20 @@
     },
     {
       "path": "figures/manuscript/fig01_workflow.pdf",
-      "size_bytes": 39112,
-      "sha256": "5b60dddec7e9800810fd9bc4beb37b3fd5b1b888115c3a662d18a2c47d47129e",
+      "size_bytes": 39149,
+      "sha256": "8ad5ba0692ad731f9d677bfabead41942d51d1a2bcdefbdeafd493fe2ac9fe1e",
       "executable": false
     },
     {
       "path": "figures/manuscript/fig01_workflow.png",
-      "size_bytes": 92438,
-      "sha256": "da528c972057e47ddaaae382bce78e65bab6b96789d78cd12d201727fb38737b",
+      "size_bytes": 78278,
+      "sha256": "6e28279f6f250c920c9b6c1680cc434f1baefbd46e824a562ac3c791c9c823ff",
       "executable": false
     },
     {
       "path": "figures/manuscript/fig01_workflow.svg",
-      "size_bytes": 60134,
-      "sha256": "79a279b5c544ade468383682ece6aca936f4640b2db30cf96f6cd7903fdfd5fd",
+      "size_bytes": 60126,
+      "sha256": "7622b8a191697d8d273ac0e29e914d5c4651a3b55eb89f2378351ce3f0f7b438",
       "executable": false
     },
     {
@@ -384,20 +384,20 @@
     },
     {
       "path": "figures/manuscript/fig03_dimension_scaling.pdf",
-      "size_bytes": 28547,
-      "sha256": "85c52b826766891ed286ae6638f63fe0ea8304d7bbf178316a6d0510ccaa0739",
+      "size_bytes": 28599,
+      "sha256": "7299cf53ad75e47ff53510b82c90e253dc374dc4115b8160f1752ab8b04f0b2c",
       "executable": false
     },
     {
       "path": "figures/manuscript/fig03_dimension_scaling.png",
-      "size_bytes": 124781,
-      "sha256": "5ebf6e6901cf6cc6bfa2ca4863f6432f58d17685933c45972ac1a46441ea2c3e",
+      "size_bytes": 119976,
+      "sha256": "6279ba9f54230a2f58a2403efabcf663d56c6793ffdd3b7a20415c921b6568e0",
       "executable": false
     },
     {
       "path": "figures/manuscript/fig03_dimension_scaling.svg",
-      "size_bytes": 67848,
-      "sha256": "8df541352f92dfe2acef0842f775bd1ada9448af785bd7bb078552cea16aa233",
+      "size_bytes": 68561,
+      "sha256": "5abb4caf80b3345bcc249710920be230d37c5c5086cbbca618c559683fcbdca3",
       "executable": false
     },
     {
@@ -516,8 +516,8 @@
     },
     {
       "path": "main.qmd",
-      "size_bytes": 57292,
-      "sha256": "8198b3e59f11efc8b08614c94e939356e41eba593751e0ffda1dcea17dc4e9af",
+      "size_bytes": 55204,
+      "sha256": "fdd59e23578ffa47a12d0dd2f3c4ff61252cf99852a47a19d6fa31d9fef97e9b",
       "executable": false
     },
     {
@@ -528,8 +528,8 @@
     },
     {
       "path": "references.bib",
-      "size_bytes": 4783,
-      "sha256": "64affaf0c5aa7d2f7e4083342ebe99c54c5a86e30dbac7e9f9b5cf02b4ece19d",
+      "size_bytes": 8814,
+      "sha256": "1da2e85540f745441e97a060d78370e0737c3fba54b805f5aaa400a2419f7e1c",
       "executable": false
     },
     {
@@ -612,51 +612,51 @@
     },
     {
       "path": "scripts/make_manuscript_assets.py",
-      "size_bytes": 17577,
-      "sha256": "33c7b66ac9c2b60b9c02ef41b4991933c0e2c89882653b5052033096dd0ad710",
-      "executable": true
+      "size_bytes": 20243,
+      "sha256": "02638fae35f48a6f77380ee70522cc4004bcebecacc9c6a3cff8bc8151338ae9",
+      "executable": false
     },
     {
       "path": "scripts/paired_analysis.py",
       "size_bytes": 2059,
       "sha256": "d7eda6aa0a58cff07ae69a0b6f62050c6f1e43b74011dd23848d4425f6b135f3",
-      "executable": true
+      "executable": false
     },
     {
       "path": "scripts/run_verified.py",
       "size_bytes": 6708,
       "sha256": "e684f4a51f0dc0d7e633c72adf676ae244cff3b73b6ce0ba04a9054ac175e309",
-      "executable": true
+      "executable": false
     },
     {
       "path": "scripts/summarize_existing.py",
       "size_bytes": 2425,
       "sha256": "3e6c9166eac86c2cff13bc42c35f11c7aec585fbee2e2edc03f21b24b6638277",
-      "executable": true
+      "executable": false
     },
     {
       "path": "scripts/validate_manuscript.py",
       "size_bytes": 2197,
       "sha256": "29f333cd0a21be804faa2e862d649f6e0dac4bee20d48ef2532eeca6ad927d43",
-      "executable": true
+      "executable": false
     },
     {
       "path": "scripts/validate_research_artifact.py",
       "size_bytes": 1406,
       "sha256": "98644ceaa74918392d111fe339693db82e0aefc806892645a5bbd2c7848b631a",
-      "executable": true
+      "executable": false
     },
     {
       "path": "setup-env-ci.sh",
       "size_bytes": 109,
       "sha256": "d7b364ebfb576daa3a85a06319a84b520be2c907eb20f236ebf0d04d2849192d",
-      "executable": true
+      "executable": false
     },
     {
       "path": "setup-render-ci.sh",
-      "size_bytes": 117,
-      "sha256": "e33e4ac9e1f0ba0050759d700d2880519294165a8890b2eb84d68a2af7087ff5",
-      "executable": true
+      "size_bytes": 155,
+      "sha256": "62cbf092d04589e2dd2c107d1940ede8f7c9c078ef69d37de15821e16092a184",
+      "executable": false
     },
     {
       "path": "src/discoverzo/__init__.py",
@@ -684,8 +684,8 @@
     },
     {
       "path": "src/discoverzo/optimizers.py",
-      "size_bytes": 4606,
-      "sha256": "b05b1c20a1e006248c192a386a1cb61e9ce583026129788ff66fb4462eafda72",
+      "size_bytes": 4651,
+      "sha256": "c6b5df07a4b3594e3568cb02c6c6c0990cbc5abaef9a29aa76a7549f38cfefd6",
       "executable": false
     },
     {
@@ -702,8 +702,8 @@
     },
     {
       "path": "src/discoverzo/subspace.py",
-      "size_bytes": 8020,
-      "sha256": "7c4d807a33df17705f82ce1c7bd26629b90615b0be238591ac81f7f1ba63a4a9",
+      "size_bytes": 9864,
+      "sha256": "dd409760599a1cb488a04fe66ebf19f82e1a4e224fff0ebd7f95864cf0d9266d",
       "executable": false
     },
     {
@@ -858,8 +858,8 @@
     },
     {
       "path": "tests/test_theory_formula.py",
-      "size_bytes": 998,
-      "sha256": "0b89bf2d46675e81c2bb79bc4303deb1b48a36dbb8a3ff67f115f5d867b0b1cc",
+      "size_bytes": 2609,
+      "sha256": "ba7c8783583b607038e29f7a52b716cf88d86ca58777f5203a3a88f74731dc08",
       "executable": false
     },
     {
