@@ -2,7 +2,7 @@
   "artifact": "discoverzo-computo-submission",
   "generated": "2026-11-19",
   "file_count": 149,
-  "total_size_bytes": 19293886,
+  "total_size_bytes": 19274678,
   "files": [
     {
       "path": ".github/ISSUE_TEMPLATE/production.md",
@@ -366,20 +366,20 @@
     },
     {
       "path": "figures/manuscript/fig02_calibration.pdf",
-      "size_bytes": 30225,
-      "sha256": "5b19603ff6c5341a70c263489b53c5ee5e96d818a4e9e2808b746038f9cbb9b3",
+      "size_bytes": 30749,
+      "sha256": "4e2c17cbbd36009fae5d9c131b132f4115ddcb9a809d52661ec7f8082c5d7ec3",
       "executable": false
     },
     {
       "path": "figures/manuscript/fig02_calibration.png",
-      "size_bytes": 182371,
-      "sha256": "31e8f844e0faadf161b836e2144c67c0404b4f577bf2f1f9a84aba7ece1e6f6a",
+      "size_bytes": 179937,
+      "sha256": "28a41656058c188c6f0296899ff564419ce244764c687751f53fe24097ad7915",
       "executable": false
     },
     {
       "path": "figures/manuscript/fig02_calibration.svg",
-      "size_bytes": 68786,
-      "sha256": "91b192f643cde2982b0050b7467c8db9d2c1766a6b39be997d722524544c2e12",
+      "size_bytes": 70838,
+      "sha256": "ecbc3f3ab4ca2586c4da258aa543d3f747ae8b6409b1af81f44b4e1a306e6caf",
       "executable": false
     },
     {
@@ -402,38 +402,38 @@
     },
     {
       "path": "figures/manuscript/fig04_exact_regret.pdf",
-      "size_bytes": 36518,
-      "sha256": "46dd406b189f391ad99615aaf35932e162336581fd01ced03ad05e9f438b5d19",
+      "size_bytes": 36629,
+      "sha256": "ba6a9a90271d0f78f4acfcbab1f69821e0a3384737c6f7682556a0539cbe2585",
       "executable": false
     },
     {
       "path": "figures/manuscript/fig04_exact_regret.png",
-      "size_bytes": 149111,
-      "sha256": "97cfefc3ab8245cc834e659cd4518a53132eb321377179ad1d1a8c43a3dd3132",
+      "size_bytes": 133168,
+      "sha256": "d46e4c30bf8eb40bb448b47521fd2c075dbad9ebe94692b535cb9ab842824f45",
       "executable": false
     },
     {
       "path": "figures/manuscript/fig04_exact_regret.svg",
-      "size_bytes": 122939,
-      "sha256": "654083307838829150d59d8539c3bb831393ed0e6d2b44dde67dadc03f3d2559",
+      "size_bytes": 121606,
+      "sha256": "ecfdbd81d1aa2e01839c47d3ff6280648376c5e305c2f9c20df4f4e2a107bce3",
       "executable": false
     },
     {
       "path": "figures/manuscript/fig05_approx_regret.pdf",
-      "size_bytes": 40439,
-      "sha256": "2363275fa31742ba6de79c6f1b7c7a4653373825e87e91d7b31931bced2dc946",
+      "size_bytes": 40549,
+      "sha256": "7a8eeba3b0b57209685586e2ba489452fd050a008e6057bd6c22f3a20454856b",
       "executable": false
     },
     {
       "path": "figures/manuscript/fig05_approx_regret.png",
-      "size_bytes": 145952,
-      "sha256": "ca21fef1c1bca22619e8cf7c6949bc054b3d2c644b01014d861775538f66ecdb",
+      "size_bytes": 131612,
+      "sha256": "d2198bb3d2dc7469c5ff65d2921936dbe19406851269cbccdde8a68284583e8b",
       "executable": false
     },
     {
       "path": "figures/manuscript/fig05_approx_regret.svg",
-      "size_bytes": 121044,
-      "sha256": "60d362a6bc0a65f937b663c4ca53b6529fc51404f837bcee6a358b09d4e46ab4",
+      "size_bytes": 119707,
+      "sha256": "6b5981297e094e85f91021962e113fbeac242ea49695f7d6317188714942fe52",
       "executable": false
     },
     {
@@ -516,8 +516,8 @@
     },
     {
       "path": "main.qmd",
-      "size_bytes": 55204,
-      "sha256": "fdd59e23578ffa47a12d0dd2f3c4ff61252cf99852a47a19d6fa31d9fef97e9b",
+      "size_bytes": 55137,
+      "sha256": "153250128280a9760402229aa122847303ede57128982883c97846e0ca76d326",
       "executable": false
     },
     {
@@ -612,8 +612,8 @@
     },
     {
       "path": "scripts/make_manuscript_assets.py",
-      "size_bytes": 20243,
-      "sha256": "02638fae35f48a6f77380ee70522cc4004bcebecacc9c6a3cff8bc8151338ae9",
+      "size_bytes": 21281,
+      "sha256": "cdb18e26d5c86996f63018d2fa472c963aae203fc59caf959ed8cf1eea49c3be",
       "executable": false
     },
     {
@@ -756,8 +756,8 @@
     },
     {
       "path": "tables/manuscript/TABLES.md",
-      "size_bytes": 6129,
-      "sha256": "0f358aa4ab82789fc218c8c7f21339a9351973de5ec035cfc6aa3a9e97d8780b",
+      "size_bytes": 18490,
+      "sha256": "853be011b9c4656c118bae64dcf94ec8ca7b2bd4e038db62f3ec2e4b5d44ea4a",
       "executable": false
     },
     {
@@ -774,14 +774,14 @@
     },
     {
       "path": "tables/manuscript/table01_calibration.csv",
-      "size_bytes": 372,
-      "sha256": "eded2789c665044a8ea726f14aea874dd0b2b0be4c545ddacc0220cd16fafbb1",
+      "size_bytes": 382,
+      "sha256": "bb842c489c855e094dc1bf323b36beb41197ff80b244654cf93c4c7199a9512f",
       "executable": false
     },
     {
       "path": "tables/manuscript/table01_calibration.md",
-      "size_bytes": 864,
-      "sha256": "23ee6b34730f9c4d3d15b0ce04817bd6d1afc8ddf511d2f8457c35238d09d8f9",
+      "size_bytes": 904,
+      "sha256": "59ddd080babdb35c69ca0481017a95c91f1719a790a725d99035a1b964309fbb",
       "executable": false
     },
     {

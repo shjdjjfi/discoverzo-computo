@@ -634,7 +634,7 @@ The optimization study includes the true subspace, cross-fitting with known or e
 
 Both recorded self-product variants have lower mean principal-angle error than cross-fitting at every tested $N$. At $N=5120$, those errors are $0.024$ for the self outer product, $0.023$ for the historical trace heuristic, and $0.047$ for cross-fitting. The comparison is specific to this quadratic design. @tbl-calibration gives the endpoint estimates and their standard errors.
 
-![Matrix and eigenspace errors with 16 calls per anchor. Lines are means across 20 repetitions, and shaded bands show one standard error on either side. “Trace-corrected outer” in the archived legend denotes the historical trace heuristic.](figures/manuscript/fig02_calibration.png){#fig-calibration width=100%}
+![Matrix and eigenspace errors with 16 calls per anchor. Lines are means across 20 repetitions, and shaded bands show one standard error on either side. The historical trace heuristic is defined above.](figures/manuscript/fig02_calibration.png){#fig-calibration width=100%}
 
 | Estimator | Anchors | Operator error | Operator SE | Subspace error | Subspace SE |
 |---|---:|---:|---:|---:|---:|
@@ -661,7 +661,7 @@ For exact ridge objectives, the oracle subspace gives the best median Sphere reg
 
 On Rastrigin, the true-subspace and full-dimensional median regrets are $1.01$ and $0.507$, respectively.
 
-![Final objective gap for exact ridge objectives, labeled “normalized regret” on the archived axis. Boxes show the interquartile range, whiskers the 5th and 95th percentiles, points all repetitions, and dotted blue lines the full-dimensional median within each benchmark.](figures/manuscript/fig04_exact_regret.png){#fig-exact-regret width=100%}
+![Final objective gap for exact ridge objectives. Boxes show the interquartile range, whiskers the 5th and 95th percentiles, points all repetitions, and dotted blue lines the full-dimensional median within each benchmark.](figures/manuscript/fig04_exact_regret.png){#fig-exact-regret width=100%}
 
 At $\tau=0.02$, the known-rank cross method has lower median regret than full ZO on Ellipsoid ($0.0938$ versus $0.150$) and Sphere ($0.0364$ versus $0.0481$). @fig-approx-regret gives the corresponding results for Rosenbrock and Rastrigin.
 
@@ -669,7 +669,7 @@ At $\tau=0.02$, the known-rank cross method has lower median regret than full ZO
 
 Our paired summary is the mean within-instance difference in $\log_{10}$ regret relative to full ZO. Negative values favor the subspace method. The 20,000 bootstrap resamples approximate percentile endpoints using the same ten independent run pairs per setting. The effective sample size remains ten, so the intervals can be sensitive to individual pairs. Most intervals in @fig-paired cross zero.
 
-![Paired comparison with full-dimensional ZO. Points are mean differences in $\log_{10}$ regret and bars are 95% paired-bootstrap intervals from 20,000 resamples. Negative values favor the method named on the row.](figures/manuscript/fig06_paired_forest.png){#fig-paired width=100%}
+![Paired comparison with full-dimensional ZO. Points are mean differences in $\log_{10}$ regret. The 95% bootstrap intervals use 20,000 resamples of the ten independent run pairs per setting. Negative values favor the method named on the row.](figures/manuscript/fig06_paired_forest.png){#fig-paired width=100%}
 
 ## Amortizing discovery across related objectives
 

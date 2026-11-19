@@ -43,7 +43,7 @@ COLORS = {
 LABELS = {
     "cross": "Cross-fitted",
     "outer": "Self outer product",
-    "outer_trace": "Trace-corrected outer",
+    "outer_trace": "Historical trace heuristic",
     "cross_block_adaptive": "Cross, adaptive rank",
     "cross_block_known": "Cross, known rank",
     "cross_sparse_known": "Cross, sparse sketch",
@@ -81,7 +81,11 @@ mpl.rcParams.update({
 
 def finish(fig: plt.Figure, stem: str) -> None:
     for ext, dpi in (("pdf", None), ("svg", None), ("png", 300)):
-        fig.savefig(FIGDIR / f"{stem}.{ext}", dpi=dpi, facecolor="white")
+        path = FIGDIR / f"{stem}.{ext}"
+        fig.savefig(path, dpi=dpi, facecolor="white")
+        if ext == "svg":
+            lines = path.read_text(encoding="utf-8").splitlines()
+            path.write_text("".join(line.rstrip() + "\n" for line in lines), encoding="utf-8")
     plt.close(fig)
 
 
@@ -218,6 +222,7 @@ def make_schematic() -> None:
 
 def make_calibration() -> None:
     df = pd.read_csv(SUMMARY / "moment_bias_summary.csv")
+    anchors = sorted(df.n_anchors.unique())
     fig, axes = plt.subplots(1, 2, figsize=(7.25, 2.75), sharex=True)
     specs = [
         ("operator_error_mean", "operator_error_se", r"Operator error $\|\widehat M-M\|_{\mathrm{op}}$"),
@@ -231,6 +236,7 @@ def make_calibration() -> None:
                     color=COLORS[method], label=LABELS[method])
             ax.fill_between(x, np.maximum(y-se, 1e-5), y+se, color=COLORS[method], alpha=0.13, linewidth=0)
         ax.set_xscale("log", base=2); ax.set_yscale("log")
+        ax.set_xticks(anchors, labels=[str(n) for n in anchors])
         ax.grid(True, which="both")
         ax.set_xlabel("Number of anchors $N$")
         ax.set_ylabel(ylabel)
@@ -372,9 +378,9 @@ def make_regret_distribution(tau: float, stem: str) -> None:
         short = ["Oracle", "Cross\nknown", "Cross\nadapt.", "Sparse", "Full", "Random"]
         ax.set_xticklabels(short, rotation=45, ha="right")
         ax.grid(True, axis="y")
-        panel_label(ax, chr(ord('a')+j))
+        ax.text(0, 1.02, chr(ord("a") + j), transform=ax.transAxes, fontweight="bold", va="bottom")
         if j == 0:
-            ax.set_ylabel(r"$\log_{10}$ final normalized regret")
+            ax.set_ylabel(r"$\log_{10}$ final objective gap")
     fig.suptitle("Exact ridge structure" if tau == 0 else r"Approximate ridge structure ($\tau=0.02$)", y=1.03, fontsize=10.5)
     fig.subplots_adjust(wspace=0.12, top=0.85, bottom=0.29)
     finish(fig, stem)
@@ -438,25 +444,47 @@ def make_amortization() -> None:
     finish(fig, "fig07_amortization")
 
 
-def md_table(df: pd.DataFrame, path: Path, formats: dict[str, str] | None = None) -> None:
+def md_table(
+    df: pd.DataFrame,
+    path: Path,
+    formats: dict[str, str] | None = None,
+    *,
+    bold_cells: dict[str, pd.Series] | None = None,
+) -> None:
     out=df.copy()
     formats=formats or {}
     for c, fmt in formats.items():
         if c in out.columns:
             out[c]=out[c].map(lambda x: fmt.format(x))
-    path.write_text(out.to_markdown(index=False)+"\n", encoding="utf-8")
     out.to_csv(path.with_suffix(".csv"), index=False)
+    for column, mask in (bold_cells or {}).items():
+        out.loc[mask, column] = out.loc[mask, column].map(lambda value: f"**{value}**")
+    path.write_text(out.to_markdown(index=False)+"\n", encoding="utf-8")
+
+
+def make_calibration_table() -> None:
+    summary = pd.read_csv(SUMMARY / "moment_bias_summary.csv")
+    endpoints = summary.loc[summary.n_anchors.isin([80, 5120])].rename(columns={
+        "method": "Estimator",
+        "n_anchors": "Anchors",
+        "operator_error_mean": "Operator error",
+        "operator_error_se": "Operator SE",
+        "subspace_error_mean": "Subspace error",
+        "subspace_error_se": "Subspace SE",
+    })
+    endpoints["Estimator"] = endpoints["Estimator"].map(LABELS)
+    errors = ("Operator error", "Subspace error")
+    minima = endpoints.groupby("Anchors")[list(errors)].transform("min")
+    md_table(
+        endpoints,
+        TABDIR / "table01_calibration.md",
+        {column: "{:.4f}" for column in (*errors, "Operator SE", "Subspace SE")},
+        bold_cells={column: endpoints[column].eq(minima[column]) for column in errors},
+    )
 
 
 def make_tables() -> None:
-    # Table 1: estimator calibration at endpoints.
-    d=pd.read_csv(SUMMARY/"moment_bias_summary.csv")
-    d=d[d.n_anchors.isin([80,5120])].copy()
-    d["method"]=d.method.map(LABELS)
-    d=d.rename(columns={"method":"Estimator","n_anchors":"Anchors",
-        "operator_error_mean":"Operator error","operator_error_se":"Operator SE",
-        "subspace_error_mean":"Subspace error","subspace_error_se":"Subspace SE"})
-    md_table(d, TABDIR/"table01_calibration.md", {c:"{:.4f}" for c in d.columns if "error" in c.lower() or "SE" in c})
+    make_calibration_table()
 
     # Table 2: dimension and rank recovery.
     d=pd.read_csv(SUMMARY/"dimension_scaling_summary.csv")
@@ -497,11 +525,15 @@ def make_tables() -> None:
     ],columns=["Study","Objective family","Dimensions","Budget / anchors","Replicates","Budget rule"])
     md_table(design,TABDIR/"table00_design.md")
 
+    write_table_index()
+
+
+def write_table_index() -> None:
     index_lines=["# Manuscript table index","",
         "All tables are generated by `scripts/make_manuscript_assets.py` from cached CSV files in `results/summary/`.",""]
     for p in sorted(TABDIR.glob("table*.md")):
         index_lines += [f"## {p.stem}","",p.read_text(encoding="utf-8"),""]
-    (TABDIR/"TABLES.md").write_text("\n".join(index_lines),encoding="utf-8")
+    (TABDIR / "TABLES.md").write_text("\n".join(index_lines).rstrip() + "\n", encoding="utf-8")
 
 
 def main() -> None:
